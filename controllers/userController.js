@@ -51,7 +51,6 @@ const createUser = async(req, res) => {
             return res.status(400).json({'error':'l\'email est déjà utilisé'});
         } else {
             bcrypt.genSalt(10, function(err, salt) {
-
                 bcrypt.hash(password, salt, function(err, hashedPass) {
                     const newUserRecord = new User({
                         login: login,
@@ -85,18 +84,24 @@ const updateUser = async(req, res) => {
 
     checkEmail(email, res);
     checkUser(login, password, organisation, res);
-
-    User.findByIdAndUpdate(id, {
-        login: login,
-        email: email,
-        password: password,
-        organisation: organisation
-    }, function(err, result) {
-        if (err) {
-            return res.status(400).json({'error':'Echec de la mise a jour de l\'utilisateur'})
-        } else {
-            return res.status(200).json({result});
+    var salt = bcrypt.genSaltSync(10);
+    bcrypt.hash(password, salt, (err, hashedPass) => {
+        if(err) {
+            return res.status(500).json({'error':'Une erreur est survenue lors de la sécurisation du mot de passe'});
         }
+        User.findByIdAndUpdate(id, {
+            login: login,
+            email: email,
+            password: hashedPass,
+            organisation: organisation
+        }, function(err, result) {
+            if (err) {
+                return res.status(400).json({'error':'Echec de la mise a jour de l\'utilisateur'})
+            } else {
+                return res.status(200).json({result});
+            }
+        })
+        
     })
 }
 
@@ -123,5 +128,6 @@ function checkUser(login, password, organisation, res) {
         return res.status(400).json({'error':'Veuillez sélectionner une organisation'});
     }
 }
+
 
 module.exports = { createUser, getUser, updateUser };
