@@ -50,20 +50,23 @@ const createUser = async(req, res) => {
         if (user) {
             return res.status(400).json({'error':'l\'email est déjà utilisé'});
         } else {
-            bcrypt.hash(password, 10, function(err, hashedPass) {
-                const newUserRecord = new User({
-                    login: login,
-                    email: email,
-                    password: hashedPass,
-                    organisation: organisation
-                })
+            bcrypt.genSalt(10, function(err, salt) {
 
-                newUserRecord.save((err, result) => {
-                    if (!err) {
-                        return res.status(201).send(result);
-                    } else {
-                        return res.status(400).json({'error':'erreur lors de la création du nouvel utilisateur :',err});
-                    }
+                bcrypt.hash(password, salt, function(err, hashedPass) {
+                    const newUserRecord = new User({
+                        login: login,
+                        email: email,
+                        password: hashedPass,
+                        organisation: organisation
+                    })
+    
+                    newUserRecord.save((err, result) => {
+                        if (!err) {
+                            return res.status(201).send(result);
+                        } else {
+                            return res.status(400).json({'error':'erreur lors de la création du nouvel utilisateur :',err});
+                        }
+                    });
                 });
             });
         }
