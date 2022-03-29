@@ -1,4 +1,4 @@
-const mongoose = reuire('mongoose');
+const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
     name: { type: String },
