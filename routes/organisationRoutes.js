@@ -9,8 +9,8 @@ const {
     // deleteOrg,
 } = require('../controllers/organisationController.js');
 
-router.post('/addOrg', createOrg);
-router.get('/getOrg', getOrgs);
+router.post('/createOrg', createOrg);
+router.get('/getOrgs', getOrgs);
 // router.post('/updateOrg', updateOrg);
 // router.post('/deleteOrg', deleteOrg);
 
