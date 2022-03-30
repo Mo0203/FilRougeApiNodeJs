@@ -30,6 +30,37 @@ const createOrg = (req, res) => {
     })
 };
 
+const updateOrg = (req, res) => {
+
+    let id = req.body.id;
+    let name = req.body.name;
+    if(checkOrga(name, res)) return res;
+
+    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
+    Orga.findByIdAndUpdate(id,{$set: {
+        name: name,
+    }},{ new: true }, function(err, result) {
+        if(err) {
+            return res.status(400).json({'error':'Echec de la modification'});
+        } else {
+            return res.status(200).json({'success':'Modification réussie'});
+        }
+    })
+}
+
+const deleteOrg = (req, res) => {
+
+    let id = req.body.id;
+    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
+    Orga.findByIdAndDelete(id,(err, result) => {
+        if (!err) {
+            return res.status(200).json({'success':'Organisation supprimée avec succès'});
+        } else {
+            return res.status(500).json({'error':'Erreur lors de la suppression'});
+        }
+    })
+}
+
 
 function checkOrga(name, res) {
     if (name == "" || name == null) {
@@ -41,4 +72,4 @@ function checkOrga(name, res) {
 }
 
 //On exporte nos fonctions
-module.exports = { getOrgs, createOrg };
+module.exports = { getOrgs, createOrg, updateOrg, deleteOrg };
