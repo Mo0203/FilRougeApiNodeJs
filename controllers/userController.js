@@ -142,7 +142,7 @@ function checkUser(login, password, organisation, res) {
     if (login == "" || login == null) {
         return res.status(400).json({ 'error': 'Veuillez renseigner votre nom' });
     }
-    if (LOGIN_REGEX.test(login)) {
+    if (!LOGIN_REGEX.test(login)) {
         return res.status(400).json({ 'error': 'Nom d\'utilisateur invalide' });
     }
     if (!PASSWORD_REGEX.test(password)) {

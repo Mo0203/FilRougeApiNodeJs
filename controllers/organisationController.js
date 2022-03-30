@@ -35,7 +35,7 @@ function checkOrga(name, res) {
     if (name == "" || name == null) {
         return res.status(400).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
     }
-    if (ORGA_REGEX.test(name)) {
+    if (!ORGA_REGEX.test(name)) {
         return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
 }
