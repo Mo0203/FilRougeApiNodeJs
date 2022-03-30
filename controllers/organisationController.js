@@ -6,12 +6,12 @@ const getOrgs = async(req, res) => {
 
     let name = req.body.name;
     if (name) {
-        if(checkOrga(name, res)) return res;
-        Orga.findOne({name: name}).then((orga) => {
-            if(orga) {
-                return res.status(200).json({orga});
+        if (checkOrga(name, res)) return res;
+        Orga.findOne({ name: name }).then((orga) => {
+            if (orga) {
+                return res.status(200).json({ orga });
             } else {
-                return res.status(400).json({'error':'Aucune organisation ne correspond a ce nom'});
+                return res.status(400).json({ 'error': 'Aucune organisation ne correspond a ce nom' });
             }
         })
     } else {
@@ -46,16 +46,18 @@ const updateOrg = async(req, res) => {
 
     let id = req.body.id;
     let name = req.body.name;
-    if(checkOrga(name, res)) return res;
+    if (checkOrga(name, res)) return res;
 
-    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
-    Orga.findByIdAndUpdate(id,{$set: {
-        name: name,
-    }},{ new: true }, function(err, result) {
-        if(err) {
-            return res.status(400).json({'error':'Echec de la modification'});
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+    Orga.findByIdAndUpdate(id, {
+        $set: {
+            name: name,
+        }
+    }, { new: true }, function(err, result) {
+        if (err) {
+            return res.status(400).json({ 'error': 'Echec de la modification' });
         } else {
-            return res.status(200).json({'success':'Modification réussie'});
+            return res.status(200).json({ 'success': 'Modification réussie' });
         }
     })
 }
@@ -63,12 +65,12 @@ const updateOrg = async(req, res) => {
 const deleteOrg = async(req, res) => {
 
     let id = req.body.id;
-    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
-    Orga.findByIdAndDelete(id,(err, result) => {
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+    Orga.findByIdAndDelete(id, (err, result) => {
         if (!err) {
-            return res.status(200).json({'success':'Organisation supprimée avec succès'});
+            return res.status(200).json({ 'success': 'Organisation supprimée avec succès' });
         } else {
-            return res.status(500).json({'error':'Erreur lors de la suppression'});
+            return res.status(500).json({ 'error': 'Erreur lors de la suppression' });
         }
     })
 }
