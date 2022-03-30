@@ -38,7 +38,7 @@ function checkOrg(name, res) {
     if (!ORGA_REGEX.test(name)) {
         return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
-}
+};
 
 //On exporte nos fonctions
 module.exports = { getOrgs, createOrg };
