@@ -10,7 +10,7 @@ const getUser = async(req, res) => {
     let email = req.body.email;
     let password = req.body.password;
 
-    if (checkEmail(email, res)) return checkEmail(email, res);
+    if (checkEmail(email, res)) return res;
 
     User.findOne({ email: email })
         .then((user) => {
@@ -43,8 +43,8 @@ const createUser = async(req, res) => {
     let password = req.body.password;
     let organisation = req.body.organisation;
 
-    if (checkUser(login, password, organisation, res)) return checkUser(login, password, organisation, res);
-    if (checkEmail(email, res)) return checkEmail(email, res);
+    if (checkUser(login, password, organisation, res)) return res;
+    if (checkEmail(email, res)) return res;
 
     User.findOne({ email: email }).then((user) => {
         if (user) {
@@ -84,8 +84,8 @@ const updateUser = async(req, res) => {
 
     if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': "L'ID spécifié pour la mise à jour de l'utilisateur est introuvable" });
 
-    if (checkUser(login, password, organisation, res)) return checkUser(login, password, organisation, res);
-    if (checkEmail(email, res)) return checkEmail(email, res);
+    if (checkUser(login, password, organisation, res)) return res;
+    if (checkEmail(email, res)) return res;
 
     var salt = bcrypt.genSaltSync(10);
     bcrypt.hash(password, salt, (err, hashedPass) => {
