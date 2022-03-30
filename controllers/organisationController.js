@@ -1,7 +1,7 @@
 const Orga = require("../models/organisationModel");
 const ObjectId = require('mongoose').Types.ObjectId;
 const ORGA_REGEX = /^[a-zA-Z0-9\-\s]+$/;
-
+// BONJOUR AU SECOURS
 const getOrgs = (req, res) => {
 
     Orga.find((err, result) => {
