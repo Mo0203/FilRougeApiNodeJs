@@ -36,7 +36,7 @@ const getUser = async(req, res) => {
 };
 
 
-const createUser = async (req, res) => {
+const createUser = async(req, res) => {
 
     let login = req.body.login;
     let email = req.body.email;
@@ -50,8 +50,8 @@ const createUser = async (req, res) => {
         if (user) {
             return res.status(400).json({ 'error': 'l\'email est déjà utilisé' });
         } else {
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(password, salt, function (err, hashedPass) {
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(password, salt, function(err, hashedPass) {
                     const newUserRecord = new User({
                         login: login,
                         email: email,
@@ -74,7 +74,7 @@ const createUser = async (req, res) => {
     })
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async(req, res) => {
 
     let id = req.body.id;
     let login = req.body.login;
@@ -101,11 +101,7 @@ const updateUser = async (req, res) => {
                 password: hashedPass,
                 organisation: organisation
             }
-<<<<<<< Updated upstream
-        }, { new: true }, function (err, result) {
-=======
         }, { new: true }, function(err, result) {
->>>>>>> Stashed changes
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else {
