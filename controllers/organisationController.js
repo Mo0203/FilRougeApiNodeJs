@@ -15,7 +15,7 @@ const getOrgs = (req, res) => {
 
 const createOrg = (req, res) => {
 
-    if (checkOrga(req.body.name, res)) return res;
+    if (checkOrg(req.body.name, res)) return res;
 
     const newOrgRecord = new Orga({
         name: req.body.name
@@ -31,7 +31,7 @@ const createOrg = (req, res) => {
 };
 
 
-function checkOrga(name, res) {
+function checkOrg(name, res) {
     if (name == "" || name == null) {
         return res.status(400).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
     }
