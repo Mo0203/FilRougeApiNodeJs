@@ -6,6 +6,7 @@ const getOrgs = async(req, res) => {
 
     let name = req.body.name;
     if (name) {
+        if(checkOrga(name, res)) return res;
         Orga.findOne({name: name}).then((orga) => {
             if(orga) {
                 return res.status(200).json({orga});
