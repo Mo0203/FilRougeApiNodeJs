@@ -89,12 +89,14 @@ const updateUser = async(req, res) => {
         if(err) {
             return res.status(500).json({'error':'Une erreur est survenue lors de la sécurisation du mot de passe'});
         }
-        User.findByIdAndUpdate(id, {
+
+        
+        User.findByIdAndUpdate(id, {$set:{
             login: login,
             email: email,
             password: hashedPass,
             organisation: organisation
-        }, function(err, result) {
+        }}, {new: true}, function(err, result) {
             if (err) {
                 return res.status(400).json({'error':'Echec de la mise a jour de l\'utilisateur'})
             } else {
@@ -128,6 +130,7 @@ function checkUser(login, password, organisation, res) {
         return res.status(400).json({'error':'Veuillez sélectionner une organisation'});
     }
 }
+
 
 
 module.exports = { createUser, getUser, updateUser };
