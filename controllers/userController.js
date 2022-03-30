@@ -6,18 +6,18 @@ const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const LOGIN_REGEX = /\W+/g;
 
-const getUser = async (req, res) => {
+const getUser = async(req, res) => {
     let email = req.body.email;
     let password = req.body.password;
 
-    checkEmail(email, res);
+    if (checkEmail(email, res)) return checkEmail(email, res);
 
     User.findOne({ email: email })
         .then((user) => {
             if (!user) {
                 return res.status(400).json({ 'message': 'Email introuvable' });
             } else {
-                bcrypt.compare(password, user.password, function (err, boolCrypt) {
+                bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
                         return res.status(200).json({ user });
                     } else if (!boolCrypt) {
@@ -43,8 +43,8 @@ const createUser = async (req, res) => {
     let password = req.body.password;
     let organisation = req.body.organisation;
 
-    checkUser(login, password, organisation, res);
-    checkEmail(email, res);
+    if (checkUser(login, password, organisation, res)) return checkUser(login, password, organisation, res);
+    if (checkEmail(email, res)) return checkEmail(email, res);
 
     User.findOne({ email: email }).then((user) => {
         if (user) {
@@ -82,8 +82,11 @@ const updateUser = async (req, res) => {
     let password = req.body.password;
     let organisation = req.body.organisation;
 
-    checkEmail(email, res);
-    checkUser(login, password, organisation, res);
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': "L'ID spécifié pour la mise à jour de l'utilisateur est introuvable" });
+
+    if (checkUser(login, password, organisation, res)) return checkUser(login, password, organisation, res);
+    if (checkEmail(email, res)) return checkEmail(email, res);
+
     var salt = bcrypt.genSaltSync(10);
     bcrypt.hash(password, salt, (err, hashedPass) => {
         if (err) {
@@ -98,7 +101,11 @@ const updateUser = async (req, res) => {
                 password: hashedPass,
                 organisation: organisation
             }
+<<<<<<< Updated upstream
         }, { new: true }, function (err, result) {
+=======
+        }, { new: true }, function(err, result) {
+>>>>>>> Stashed changes
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else {
@@ -108,6 +115,23 @@ const updateUser = async (req, res) => {
 
     })
 }
+
+
+const deleteUser = async(req, res) => {
+    if (!ObjectId.isValid(req.body.id)) return res.status(400).json({ 'error': "L'ID spécifié pour la suppression de l'utilisateur est introuvable" });
+
+    User.findByIdAndDelete(
+        req.body.id,
+        (err, result) => {
+            if (!err) {
+                return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
+            } else {
+                return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
+            }
+        }
+    )
+}
+
 
 function checkEmail(email, res) {
     if (email == "" || email == null) {
@@ -135,4 +159,4 @@ function checkUser(login, password, organisation, res) {
 
 
 
-module.exports = { createUser, getUser, updateUser };
+module.exports = { createUser, getUser, updateUser, deleteUser };
