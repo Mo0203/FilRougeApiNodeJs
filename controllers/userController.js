@@ -15,15 +15,15 @@ const getUser = async(req, res) => {
     User.findOne({ email: email })
         .then((user) => {
             if (!user) {
-                return res.status(400).json({ 'message': 'Email introuvable' });
+                return res.status(400).json({ 'error': 'Email introuvable' });
             } else {
                 bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
-                        return res.status(200).json({ user });
+                        res.status(200).send(user);
                     } else if (!boolCrypt) {
-                        return res.status(400).json({ 'message': 'Mot de passe incorrect' });
+                        return res.status(400).json({ 'error': 'Mot de passe incorrect' });
                     } else {
-                        return res.status(400).json({ 'message': 'Une erreur est survenue' + err });
+                        return res.status(400).json({ 'error': 'Une erreur est survenue' + err });
                     }
                 })
 
@@ -31,7 +31,7 @@ const getUser = async(req, res) => {
             }
         })
         .catch((err) => {
-            return res.status(400).json({ 'message': 'Une erreur est survenue' + err });
+            return res.status(500).json({ 'error': 'Une erreur est survenue' + err });
         });
 };
 

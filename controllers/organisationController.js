@@ -37,7 +37,7 @@ const createOrg = async(req, res) => {
         if (!err) {
             res.status(201).send(result);
         } else {
-            return res.status(400).json({ 'error': +err });
+            return res.status(400).json({ 'error': 'Erreur survenue lors de la sauvegarde' });
         }
     })
 };
@@ -53,12 +53,12 @@ const updateOrg = async(req, res) => {
         name: name,
     }},{ new: true }, function(err, result) {
         if(err) {
-            return res.status(400).json({'error':'Echec de la modification'});
+            return res.status(500).json({'error':'Echec de la modification'});
         } else {
             return res.status(200).json({'success':'Modification réussie'});
         }
     })
-}
+};
 
 const deleteOrg = async(req, res) => {
 
@@ -71,7 +71,7 @@ const deleteOrg = async(req, res) => {
             return res.status(500).json({'error':'Erreur lors de la suppression'});
         }
     })
-}
+};
 
 
 function checkOrga(name, res) {
@@ -81,7 +81,7 @@ function checkOrga(name, res) {
     if (!ORGA_REGEX.test(name)) {
         return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
-}
+};
 
 //On exporte nos fonctions
 module.exports = { getOrgs, createOrg, updateOrg, deleteOrg };

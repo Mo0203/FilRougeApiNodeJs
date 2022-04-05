@@ -11,7 +11,7 @@ const {
 
 router.post('/register', createUser);
 router.post('/login', getUser);
-router.post('/updateUser', updateUser);
-router.post('/deleteUser', deleteUser);
+router.put('/user', updateUser);
+router.delete('/user', deleteUser);
 
 module.exports = router;
