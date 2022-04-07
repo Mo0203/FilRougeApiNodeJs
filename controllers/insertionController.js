@@ -1,8 +1,9 @@
-const { send } = require('express/lib/response');
 const Insertion = require('../models/insertionModel.js');
+const Log = require('../models/logModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
-const INSERT_REGEX = /^[a-zA-Z0-9\-\s]+$/;
 const modifUrl = false;
+const dotenv = require('dotenv');
+dotenv.config();
 
 const getInsertions = async(req, res) => {
 
@@ -54,6 +55,7 @@ const createInsertion = async(req, res) => {
 
             newInsertionRecord.save((err, result) => {
                 if (!err)  {
+                    saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, result.id, "Created insertion")
                     res.status(201).send(result);
                 } else {
                     return res.status(400).json({'error':'Erreur survenue lors de la sauvegarde'});
@@ -70,6 +72,7 @@ const deleteInsertion = async(req, res) => {
     if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
     Insertion.findByIdAndDelete(id,(err, result) => {
         if (!err) {
+            saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Deleted insertion")
             return res.status(200).json({'success':'Insertion supprimée avec succès'});
         } else {
             return res.status(500).json({'error':'Erreur lors de la suppression'});
@@ -111,6 +114,7 @@ const updateInsertion = async(req, res) => {
         if(err) {
             return res.status(400).json({'error':'Echec de la modification'});
         } else {
+            saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Modified insertion");
             return res.status(200).json({'success':'Modification réussie'});
         }
     })
@@ -155,5 +159,19 @@ function checkInsert(title, min_age, max_age, url, res) {
         console.log("Url modifié");
     }
 };
+
+function saveLog(actorId, targetId, action) {
+    const newLog = new Log({
+        userId: actorId,
+        action: action+" id: "+targetId
+    })
+    newLog.save((err, result) => {
+        if (!err) {
+            console.log("Log saved");
+        } else {
+            console.log("Error, couldn't save log");
+        }
+    });
+}
 
 module.exports = { getInsertions, getInsertionByAge, getByOrganisation , createInsertion, deleteInsertion, updateInsertion };
