@@ -1,4 +1,5 @@
 const User = require('../models/userModel.js');
+const Log = require('../models/logModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -22,7 +23,7 @@ const getUser = async(req, res) => {
             } else {
                 bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
-                        res.status(200).send({"user":user,"token":generateToken()});
+                        res.status(200).send({"user":user,"token":generateToken(user.id)});
                     } else if (!boolCrypt) {
                         return res.status(400).json({ 'error': 'Mot de passe incorrect' });
                     } else {
@@ -78,7 +79,7 @@ const createUser = async(req, res) => {
 };
 
 const updateUser = async(req, res) => {
-
+    let userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
     let id = req.body.id;
     let login = req.body.login;
     let email = req.body.email;
@@ -108,6 +109,7 @@ const updateUser = async(req, res) => {
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else {
+                saveLog(userId, id, "Modified user")
                 return res.status(200).json({ result });
             }
         })
@@ -123,6 +125,7 @@ const deleteUser = async(req, res) => {
         req.body.id,
         (err, result) => {
             if (!err) {
+                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, req.body.id, "Deleted user");
                 return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
             } else {
                 return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
@@ -156,8 +159,22 @@ function checkUser(login, password, organisation, res) {
     }
 }
 
-function generateToken() {
-    return jwt.sign({}, process.env.TOKEN_SECRET, { expiresIn: '120m'});
+function generateToken(userId) {
+    return jwt.sign({"sub":userId}, process.env.TOKEN_SECRET, { expiresIn: '120m'});
+}
+
+function saveLog(actorId, targetId, action) {
+    const newLog = new Log({
+        userId: actorId,
+        action: action+" id: "+targetId
+    })
+    newLog.save((err, result) => {
+        if (!err) {
+            console.log("Log saved");
+        } else {
+            console.log("Error, couldn't save log");
+        }
+    });
 }
 
 
