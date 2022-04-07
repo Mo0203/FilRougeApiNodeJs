@@ -1,7 +1,10 @@
 const User = require('../models/userModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
 
+dotenv.config();
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const LOGIN_REGEX = /^[a-zA-Z0-9\-\s]+$/;
@@ -19,7 +22,7 @@ const getUser = async(req, res) => {
             } else {
                 bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
-                        res.status(200).send(user);
+                        res.status(200).send({"user":user,"token":generateToken()});
                     } else if (!boolCrypt) {
                         return res.status(400).json({ 'error': 'Mot de passe incorrect' });
                     } else {
@@ -153,6 +156,9 @@ function checkUser(login, password, organisation, res) {
     }
 }
 
+function generateToken() {
+    return jwt.sign({}, process.env.TOKEN_SECRET, { expiresIn: '120m'});
+}
 
 
 module.exports = { createUser, getUser, updateUser, deleteUser };

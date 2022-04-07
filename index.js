@@ -22,9 +22,10 @@ app.use('/', orgRoutes);
 app.use('/', insertRoutes);
 app.use('/', audienceRoutes);
 
+
 mongoose.connect(process.env.MONGO_URL)
     .then((result) => {
         app.listen(3500);
-        console.log('Server is now listening on port 3500')
+        console.log('Server is now listening on port 3500');
     })
     .catch((err) => console.error(err));
