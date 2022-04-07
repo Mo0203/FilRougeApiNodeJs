@@ -79,7 +79,6 @@ const createUser = async(req, res) => {
 };
 
 const updateUser = async(req, res) => {
-    let userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
     let id = req.body.id;
     let login = req.body.login;
     let email = req.body.email;
@@ -109,7 +108,7 @@ const updateUser = async(req, res) => {
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else {
-                saveLog(userId, id, "Modified user")
+                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Modified user")
                 return res.status(200).json({ result });
             }
         })
