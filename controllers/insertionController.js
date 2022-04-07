@@ -1,5 +1,6 @@
 const Insertion = require('../models/insertionModel.js');
 const Log = require('../models/logModel.js');
+const jwt = require('jsonwebtoken');
 const ObjectId = require('mongoose').Types.ObjectId;
 const modifUrl = false;
 const dotenv = require('dotenv');
@@ -95,10 +96,10 @@ const updateInsertion = async(req, res) => {
     const goal = req.body.goal;
     const info = req.body.info;
 
-    if(checkOrga(title, res)) return res;
+    if(checkInsert(title, min_age, max_age, url, res)) return res;
 
     if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
-    Orga.findByIdAndUpdate(id,{$set: {
+    Insertion.findByIdAndUpdate(id,{$set: {
         title : title,
         min_age: min_age,
         max_age: max_age,
