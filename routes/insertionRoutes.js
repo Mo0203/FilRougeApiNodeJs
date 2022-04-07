@@ -3,16 +3,20 @@ const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const {
-    createUser,
-    getUser,
-    updateUser,
-    deleteUser,
-} = require('../controllers/userController.js');
+    getInsertions,
+    getInsertionByAge,
+    getByOrganisation,
+    createInsertion,
+    deleteInsertion,
+    updateInsertion,
+} = require('../controllers/insertionController.js');
 
-router.post('/register', createUser);
-router.post('/login', getUser);
-router.put('/user', authenticateToken, updateUser);
-router.delete('/user', authenticateToken, deleteUser);
+router.get('/insertion', getInsertions);
+router.post('/insertion', authenticateToken, createInsertion);
+router.delete('/insertion',authenticateToken, deleteInsertion);
+router.put('/insertion',authenticateToken, updateInsertion);
+router.post('/insertionByAge', getInsertionByAge);
+router.post('/insetionByOrganisation', getByOrganisation);
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
@@ -29,6 +33,5 @@ function authenticateToken(req, res, next) {
       next()
     })
 }
-
 
 module.exports = router;
