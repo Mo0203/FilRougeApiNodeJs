@@ -1,14 +1,32 @@
 const Log = require('../models/logModel.js');
+const User = require('../models/userModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
+const jwt = require('jsonwebtoken');
 
 const getLogs = async (req, res) => {
-    Log.find((err, result) => {
-        if (!err) {
-            res.status(200).send(result);
+
+    let userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
+    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+    
+    User.findById(userId, function(err, docs) {
+        console.log(docs.email);
+        if(err) {
+            return res.status(404).json({'error':'Utilisateur introuvable'});
         } else {
-            return res.status(500).json({ 'error': 'Erreur lors de la requête des logs:' + err });
+            if(docs.isAdmin == true) {
+                Log.find((err, result) => {
+                    if (!err) {
+                        res.status(200).send(result);
+                    } else {
+                        return res.status(500).json({ 'error': 'Erreur lors de la requête des logs:' + err });
+                    }
+                })
+            } else {
+                return res.status(403).json({'error':'L\'utilisateur spécifié n\'est pas administrateur'});
+            }
         }
     })
+    
 }
 
 const getLog = async (req, res) => {

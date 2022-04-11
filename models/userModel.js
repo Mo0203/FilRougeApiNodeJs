@@ -5,6 +5,7 @@ const UserSchema = new mongoose.Schema({
     email: { type: String }, //Parametres = (type : String,int ect...) et (required(champs obligatoirement requis ou non))
     password: { type: String },
     organisation: { type: String },
+    isAdmin: { type: Boolean },
     date: { type: Date, default: Date.now },
 });
 
