@@ -1,5 +1,5 @@
 const express = require('express');
-
+const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const xssClean = require('xss-clean');
 const app = express();
