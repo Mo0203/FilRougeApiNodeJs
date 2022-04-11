@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 
@@ -12,9 +13,7 @@ const {
 router.post('/register', createUser);
 router.post('/login', getUser);
 router.put('/user', authenticateToken, updateUser);
-router.delete('/user', deleteUser);
-
-
+router.delete('/user', authenticateToken, deleteUser);
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
@@ -31,4 +30,7 @@ function authenticateToken(req, res, next) {
         next()
     })
 }
+
+
+
 module.exports = router;

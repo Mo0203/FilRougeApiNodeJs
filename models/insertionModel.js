@@ -1,21 +1,20 @@
 const mongoose = require('mongoose');
 
-const schemaInsertion = new mongoose.Schema({
+const InsertionSchema = new mongoose.Schema({
     title: { type: String },
-    financement: { type: String },
-    organisation: { type: String },
-    but: { type: String },
-    age_max: { type: Number },
-    age_min: { type: Number },
-    Date: { type: Date },
-    duree: { type: String },
-    infosSup: { type: String },
+    min_age: { type: String },
+    max_age: { type: String },
+    income: { type: String },
+    creation_date: { type: Date, default: Date.now },
     url: { type: String },
-    remuneration: { type: String },
-    id: { type: Number }
-
+    audience: { type: String },
+    duration: { type: String },
+    funding: { type: String },
+    organisation: { type: String },
+    goal: { type: String },
+    info: { type: String }
 });
 
-const insertionModel = mongoose.model('insertion', schemaInsertion);
+const InsertionModel = mongoose.model('insertions', InsertionSchema);
 
-module.exports = insertionModel;
+module.exports = InsertionModel;
