@@ -57,7 +57,11 @@ const getLog = async (req, res) => {
 
 const getLogByUser = async (req, res) => {
 
-    const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
+    const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenError, success) {
+        if(err) {
+            return null;
+        }
+    }).sub;
     if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
 
     User.findById(userId, function(err, docs) {
