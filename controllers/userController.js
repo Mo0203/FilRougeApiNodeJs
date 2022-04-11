@@ -1,12 +1,17 @@
 const User = require('../models/userModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const EMAIL_REGEX = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const LOGIN_REGEX = /^[a-zA-Z0-9\-\s]+$/;
 
-const getUser = async(req, res) => {
+
+const getUser = async (req, res) => {
     let email = req.body.email;
     let password = req.body.password;
 
@@ -17,9 +22,9 @@ const getUser = async(req, res) => {
             if (!user) {
                 return res.status(400).json({ 'message': 'Email introuvable' });
             } else {
-                bcrypt.compare(password, user.password, function(err, boolCrypt) {
+                bcrypt.compare(password, user.password, function (err, boolCrypt) {
                     if (boolCrypt) {
-                        return res.status(200).json({ user });
+                        return res.status(200).json({ 'user': user, 'token': generateToken() });
                     } else if (!boolCrypt) {
                         return res.status(400).json({ 'message': 'Mot de passe incorrect' });
                     } else {
@@ -36,7 +41,7 @@ const getUser = async(req, res) => {
 };
 
 
-const createUser = async(req, res) => {
+const createUser = async (req, res) => {
 
     let login = req.body.login;
     let email = req.body.email;
@@ -50,8 +55,8 @@ const createUser = async(req, res) => {
         if (user) {
             return res.status(400).json({ 'error': 'l\'email est déjà utilisé' });
         } else {
-            bcrypt.genSalt(10, function(err, salt) {
-                bcrypt.hash(password, salt, function(err, hashedPass) {
+            bcrypt.genSalt(10, function (err, salt) {
+                bcrypt.hash(password, salt, function (err, hashedPass) {
                     const newUserRecord = new User({
                         login: login,
                         email: email,
@@ -74,7 +79,7 @@ const createUser = async(req, res) => {
     })
 };
 
-const updateUser = async(req, res) => {
+const updateUser = async (req, res) => {
 
     let id = req.body.id;
     let login = req.body.login;
@@ -101,7 +106,7 @@ const updateUser = async(req, res) => {
                 password: hashedPass,
                 organisation: organisation
             }
-        }, { new: true }, function(err, result) {
+        }, { new: true }, function (err, result) {
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else {
@@ -113,7 +118,7 @@ const updateUser = async(req, res) => {
 }
 
 
-const deleteUser = async(req, res) => {
+const deleteUser = async (req, res) => {
     if (!ObjectId.isValid(req.body.id)) return res.status(400).json({ 'error': "L'ID spécifié pour la suppression de l'utilisateur est introuvable" });
 
     User.findByIdAndDelete(
@@ -151,6 +156,10 @@ function checkUser(login, password, organisation, res) {
     if (organisation == "" || organisation == null) {
         return res.status(400).json({ 'error': 'Veuillez sélectionner une organisation' });
     }
+}
+
+function generateToken() {
+    return jwt.sign({}, process.env.TOKEN_SECRET, { expiresIn: '120m' });
 }
 
 

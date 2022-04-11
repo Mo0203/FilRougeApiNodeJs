@@ -2,16 +2,16 @@ const Orga = require("../models/organisationModel");
 const ObjectId = require('mongoose').Types.ObjectId;
 const ORGA_REGEX = /^[a-zA-Z0-9\-\s]+$/;
 
-const getOrgs = async(req, res) => {
+const getOrgs = async (req, res) => {
 
     let name = req.body.name;
     if (name) {
-        if(checkOrga(name, res)) return res;
-        Orga.findOne({name: name}).then((orga) => {
-            if(orga) {
-                return res.status(200).json({orga});
+        if (checkOrg(name, res)) return res;
+        Orga.findOne({ name: name }).then((orga) => {
+            if (orga) {
+                return res.status(200).json({ orga });
             } else {
-                return res.status(400).json({'error':'Aucune organisation ne correspond a ce nom'});
+                return res.status(400).json({ 'error': 'Aucune organisation ne correspond a ce nom' });
             }
         })
     } else {
@@ -25,7 +25,7 @@ const getOrgs = async(req, res) => {
     }
 };
 
-const createOrg = async(req, res) => {
+const createOrg = async (req, res) => {
 
     if (checkOrg(req.body.name, res)) return res;
 
@@ -42,74 +42,44 @@ const createOrg = async(req, res) => {
     })
 };
 
-const updateOrg = async(req, res) => {
-
-    let id = req.body.id;
-    let name = req.body.name;
-    if(checkOrga(name, res)) return res;
-
-    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
-    Orga.findByIdAndUpdate(id,{$set: {
-        name: name,
-    }},{ new: true }, function(err, result) {
-        if(err) {
-            return res.status(400).json({'error':'Echec de la modification'});
-        } else {
-            return res.status(200).json({'success':'Modification réussie'});
-        }
-    })
-}
-
-const deleteOrg = async(req, res) => {
-
-    let id = req.body.id;
-    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
-    Orga.findByIdAndDelete(id,(err, result) => {
-        if (!err) {
-            return res.status(200).json({'success':'Organisation supprimée avec succès'});
-        } else {
-            return res.status(500).json({'error':'Erreur lors de la suppression'});
-        }
-    })
-}
-
-
-
 const updateOrg = async (req, res) => {
 
     let id = req.body.id;
     let name = req.body.name;
+    if (checkOrg(name, res)) return res;
 
-    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': "L'ID spécifié pour la mise à jour de l'utilisateur est introuvable" });
-
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     Orga.findByIdAndUpdate(id, {
         $set: {
             name: name,
         }
-
     }, { new: true }, function (err, result) {
         if (err) {
-            return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'organisation' })
+            return res.status(400).json({ 'error': 'Echec de la modification' });
         } else {
-            return res.status(200).json({ result });
+            return res.status(200).json({ 'success': 'Modification réussie' });
         }
-    });
-};
+    })
+}
 
 const deleteOrg = async (req, res) => {
-    if (!ObjectId.isValid(req.body.id)) return res.status(400).json({ 'error': "L'ID spécifié pour la suppression de l'organisation est introuvable" });
 
-    Orga.findByIdAndDelete(
-        req.body.id,
-        (err, result) => {
-            if (!err) {
-                return res.status(200).json({ 'success': ' organisation supprimée avec succès' });
-            } else {
-                return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'organisation : ' + err });
-            }
+    let id = req.body.id;
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+    Orga.findByIdAndDelete(id, (err, result) => {
+        if (!err) {
+            return res.status(200).json({ 'success': 'Organisation supprimée avec succès' });
+        } else {
+            return res.status(500).json({ 'error': 'Erreur lors de la suppression' });
         }
-    )
+    })
 }
+
+
+
+
+
+
 
 function checkOrg(name, res) {
     if (name == "" || name == null) {
