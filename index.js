@@ -5,11 +5,13 @@ const xssClean = require('xss-clean');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
+const xss = require('xss-clean');
 
 const userRoutes = require('./routes/userRoutes');
 const orgRoutes = require('./routes/organisationRoutes');
 const insertRoutes = require('./routes/insertionRoutes');
 const audienceRoutes = require('./routes/audienceRoutes');
+const logRoutes = require('./routes/logRoutes');
 
 
 
@@ -24,6 +26,7 @@ app.use('/', userRoutes);
 app.use('/', orgRoutes);
 app.use('/', insertRoutes);
 app.use('/', audienceRoutes);
+app.use('/', logRoutes);
 
 
 mongoose.connect(process.env.MONGO_URL)
