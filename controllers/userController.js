@@ -1,4 +1,5 @@
 const User = require('../models/userModel.js');
+const Log = require('../models/logModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -22,7 +23,7 @@ const getUser = async(req, res) => {
             } else {
                 bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
-                        res.status(200).send({"user":user,"token":generateToken()});
+                        res.status(200).send({"user":user,"token":generateToken(user.id)});
                     } else if (!boolCrypt) {
                         return res.status(400).json({ 'error': 'Mot de passe incorrect' });
                     } else {
@@ -78,7 +79,6 @@ const createUser = async(req, res) => {
 };
 
 const updateUser = async(req, res) => {
-
     let id = req.body.id;
     let login = req.body.login;
     let email = req.body.email;
@@ -107,7 +107,8 @@ const updateUser = async(req, res) => {
         }, { new: true }, function(err, result) {
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
-            } else {
+            } else { // logs are saved only when the action is validated with no error
+                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Modified user")
                 return res.status(200).json({ result });
             }
         })
@@ -123,6 +124,7 @@ const deleteUser = async(req, res) => {
         req.body.id,
         (err, result) => {
             if (!err) {
+                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, req.body.id, "Deleted user");
                 return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
             } else {
                 return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
@@ -132,6 +134,7 @@ const deleteUser = async(req, res) => {
 }
 
 
+// email regex and not null checker 
 function checkEmail(email, res) {
     if (email == "" || email == null) {
         return res.status(400).json({ 'error': 'Veuillez renseigner votre email' });
@@ -141,6 +144,7 @@ function checkEmail(email, res) {
     }
 }
 
+// User entry checker to securise password and prevent null strings
 function checkUser(login, password, organisation, res) {
     if (login == "" || login == null) {
         return res.status(400).json({ 'error': 'Veuillez renseigner votre nom' });
@@ -156,8 +160,24 @@ function checkUser(login, password, organisation, res) {
     }
 }
 
-function generateToken() {
-    return jwt.sign({}, process.env.TOKEN_SECRET, { expiresIn: '120m'});
+// jsonwebtoken generator, with a userId to identify the user
+function generateToken(userId) {
+    return jwt.sign({"sub":userId}, process.env.TOKEN_SECRET, { expiresIn: '120m'});
+}
+
+// Generic method to save logs in the database
+function saveLog(actorId, targetId, action) {
+    const newLog = new Log({
+        userId: actorId,
+        action: action+" id: "+targetId
+    })
+    newLog.save((err, result) => {
+        if (!err) { // console log to inform but not stop the app if there is an issue with log saving
+            console.log("Log saved");
+        } else {
+            console.log("Error, couldn't save log");
+        }
+    });
 }
 
 

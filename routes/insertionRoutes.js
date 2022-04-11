@@ -19,7 +19,6 @@ router.post('/insertionByAge', getInsertionByAge);
 router.post('/insetionByOrganisation', getByOrganisation);
 
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization']
     //const token = authHeader && authHeader.split(' ')[1]
     const token = req.headers['authorization'];// récupère le token dans le header de la requête
     if (token == null) return res.sendStatus(401)
@@ -27,7 +26,7 @@ function authenticateToken(req, res, next) {
     jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
   
       if (err) return res.sendStatus(403)
-  
+      
       req.user = user
   
       next()
