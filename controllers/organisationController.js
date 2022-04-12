@@ -104,7 +104,26 @@ function adminCheck(userId) {
         } else {
             if (result.isAdmin) {
                 return true;
+            } else {
+                res.status(403).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })
+    return false;
 }
+
+// fonction de vérification de la validité du token, renvoie null si erreur
+function verifyToken(req, res) {
+    try {
+        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function(tokenErr, decoded) {
+            if (tokenErr) throw new Error(tokenErr);
+            req.auth = decoded;
+        })
+    } catch (e) {
+        res.status(403).json({ 'error': 'Token invalide ' + e });
+        return null;
+    }
+    return req.auth.sub;
+}
+
+module.exports = { getOrgs, createOrg, updateOrg, deleteOrg }
