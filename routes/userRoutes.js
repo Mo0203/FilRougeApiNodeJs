@@ -15,22 +15,4 @@ router.post('/login', getUser);
 router.put('/user', updateUser);
 router.delete('/user', deleteUser);
 
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization']
-    //const token = authHeader && authHeader.split(' ')[1]
-    const token = req.headers['authorization'];// récupère le token dans le header de la requête
-    if (token == null) return res.sendStatus(401)
-
-    jwt.verify(token, process.env.TOKEN_SECRET, (err, user) => {
-
-        if (err) return res.sendStatus(403)
-
-        req.user = user
-
-        next()
-    })
-}
-
-
-
 module.exports = router;

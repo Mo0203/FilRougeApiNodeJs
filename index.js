@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const helmet = require('helmet');
 const xssClean = require('xss-clean');
 const app = express();
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger.json');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const xss = require('xss-clean');
@@ -14,7 +16,6 @@ const orgRoutes = require('./routes/organisationRoutes');
 const insertRoutes = require('./routes/insertionRoutes');
 const audienceRoutes = require('./routes/audienceRoutes');
 const logRoutes = require('./routes/logRoutes');
-
 
 
 app.use(cors());

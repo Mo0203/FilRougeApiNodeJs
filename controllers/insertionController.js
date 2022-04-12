@@ -19,6 +19,7 @@ const getInsertions = async (req, res) => {
 };
 
 const createInsertion = async (req, res) => {
+
     const userId = verifyToken(req, res);
     if (userId == null) return res;
 
@@ -70,12 +71,11 @@ const createInsertion = async (req, res) => {
 };
 
 const deleteInsertion = async (req, res) => {
+
     const userId = verifyToken(req, res);
     if (userId == null) return res;
 
     id = req.body.id;
-
-
     if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     Insertion.findByIdAndDelete(id, (err, result) => {
         if (!err) {
@@ -88,6 +88,9 @@ const deleteInsertion = async (req, res) => {
 };
 
 const updateInsertion = async (req, res) => {
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+
     const userId = verifyToken(req, res);
     if (userId == null) return res;
 

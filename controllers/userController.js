@@ -131,8 +131,6 @@ const deleteUser = async (req, res) => {
     const userId = verifyToken(req, res);
     if (userId == null) return res;
     if (adminCheck(userId) == false) return res;
-
-
     id = req.body.id;
     if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     User.findByIdAndDelete(
@@ -146,7 +144,6 @@ const deleteUser = async (req, res) => {
             }
         }
     )
-
 }
 
 
@@ -196,6 +193,23 @@ function saveLog(actorId, targetId, action) {
     });
 }
 
+// checks is user retrieved from token has admin rights
+function adminCheck(userId) {
+    User.findById(userId, function (err, result) {
+        if (err) {
+            res.status(404).json({ 'error': 'Utilisateur introuvable' });
+        } else {
+            if (result.isAdmin) {
+                return true;
+            } else {
+                res.status(403).json({ 'error': 'Vous ne disposez pas des droits' });
+            }
+        }
+    })
+    return false;
+}
+
+// fonction de vérification de la validité du token, renvoie null si erreur
 function verifyToken(req, res) {
     try {
         jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {
