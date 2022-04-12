@@ -8,11 +8,12 @@ const getLogs = async (req, res) => {
     const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
     if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
 
-    User.findById(userId, function(err, docs) {
-        if(err) {
-            return res.status(404).json({'error':'Utilisateur introuvable'});
+    User.findById(userId, function (err, docs) {
+        console.log(docs.email);
+        if (err) {
+            return res.status(404).json({ 'error': 'Utilisateur introuvable' });
         } else {
-            if(docs.isAdmin) {
+            if (docs.isAdmin) {
                 Log.find((err, result) => {
                     if (!err) {
                         res.status(200).send(result);
@@ -21,23 +22,22 @@ const getLogs = async (req, res) => {
                     }
                 })
             } else {
-                return res.status(403).json({'error':'L\'utilisateur spécifié n\'est pas administrateur'});
+                return res.status(403).json({ 'error': 'L\'utilisateur spécifié n\'est pas administrateur' });
             }
         }
     })
-    
+
 }
 
 const getLog = async (req, res) => {
-
     const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
     if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
 
-    User.findById(userId, function(err, docs) {
-        if(err) {
-            return res.status(404).json({'error':'Utilisateur introuvable'});
+    User.findById(userId, function (err, docs) {
+        if (err) {
+            return res.status(404).json({ 'error': 'utilisateur introuvable' });
         } else {
-            if(docs.isAdmin) {
+            if (docs.isAdmin) {
                 const id = req.body.id;
                 if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
                 Log.findById(id, function (err, docs) {
@@ -49,38 +49,45 @@ const getLog = async (req, res) => {
                     }
                 });
             }
-        }
-    })
-    
-}
 
 
-const getLogByUser = async (req, res) => {
+            const getLogByUser = async (req, res) => {
+                const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
+                if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
 
-    const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenError, success) {
-        if(err) {
-            return null;
-        }
-    }).sub;
-    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
-
-    User.findById(userId, function(err, docs) {
-        if(err) {
-            return res.status(404).json({'error':'Utilisateur introuvable'});
-        } else {
-            if(docs.isAdmin) {
-                const id = req.body.userId;
-                Log.find(({ userId: id }), (err, result) => {
-                    if (!err) {
-                        res.status(200).send(result);
+                User.findById(userId, function (err, docs) {
+                    if (err) {
+                        return res.status(404).json({ 'error': 'Utilisateur introuvable' });
                     } else {
-                        return res.status(500).json({ 'error': 'Erreur lors de la requête des logs:' + err });
+                        if (docs.isAdmin) {
+                            const id = req.body.userId;
+                            Log.find(({ userId: id }), (logErr, result) => {
+                                if (!logErr) {
+                                    res.status(200).send(result);
+
+                                } else {
+                                    Return.res.staus(500).json({ 'error': ' Erreur lors de la reqête des logs' })
+                                }
+                            })
+                        }
                     }
                 })
             }
-        }
-    })
-    
-}
 
-module.exports = { getLogs, getLog, getLogByUser, };//deleteLog }
+
+            const deleteLog = async (req, res) => {
+                id = req.body.id;
+
+
+                if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'Le log spécifié n\'existe  pas' });
+                Log.findByIdAndDelete(id, (err, result) => {
+                    if (!err) {
+                        return res.status(200).json({ 'success': 'Log supprimée avec succès' });
+                    } else {
+                        return res.status(500).json({ 'error': 'Erreur lors de la suppression' });
+                    }
+                })
+            }
+
+
+            module.exports = { getLogs, getLog, getLogByUser, deleteLog }

@@ -13,7 +13,7 @@ const {
 router.get('/log', getLogs);
 router.post('/log', getLog);
 router.post('/logByUser', getLogByUser);
-//router.deleteLog('/log', deleteLog);
+router.deleteLog('/log', deleteLog);
 
 
 module.exports = router;
