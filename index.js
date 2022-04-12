@@ -6,6 +6,8 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const xss = require('xss-clean');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger.json');
 
 const userRoutes = require('./routes/userRoutes');
 const orgRoutes = require('./routes/organisationRoutes');
@@ -22,6 +24,7 @@ app.use(express.json());
 app.use(helmet());
 app.use(xss());
 app.use(cors());
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use('/', userRoutes);
 app.use('/', orgRoutes);
 app.use('/', insertRoutes);

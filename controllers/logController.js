@@ -8,10 +8,8 @@ const getLogs = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-
-    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
-
     if (adminCheck(userId) == false) return res;
+
     Log.find((err, result) => {
         if (!err) {
             res.status(200).send(result);
@@ -25,9 +23,8 @@ const getLog = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-
-    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     if (adminCheck(userId) == false) return res;
+
     const id = req.body.id;
     if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     Log.findById(id, function (err, docs) {
@@ -45,11 +42,12 @@ const getLogByUser = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-
-    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     if (adminCheck(userId) == false) return res;
-    if (userId == null) return res;
+
+
     const id = req.body.userId;
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+
     Log.find(({ userId: id }), (logErr, result) => {
         if (!logErr) {
             res.status(200).send(result);
@@ -63,8 +61,8 @@ const deleteLog = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     if (adminCheck(userId) == false) return res;
+
     id = req.body.id;
     if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     Log.findByIdAndDelete(id, (err, result) => {

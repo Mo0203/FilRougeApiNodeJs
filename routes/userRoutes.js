@@ -12,8 +12,8 @@ const {
 
 router.post('/register', createUser);
 router.post('/login', getUser);
-router.put('/user', authenticateToken, updateUser);
-router.delete('/user', authenticateToken, deleteUser);
+router.put('/user', updateUser);
+router.delete('/user', deleteUser);
 
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization']
