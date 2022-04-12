@@ -19,6 +19,10 @@ const getInsertions = async(req, res) => {
 };
 
 const createInsertion = async(req, res) => {
+
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+
     const title = req.body.title;
     const min_age = req.body.min_age;
     const max_age = req.body.max_age;
@@ -56,7 +60,7 @@ const createInsertion = async(req, res) => {
 
             newInsertionRecord.save((err, result) => {
                 if (!err)  {
-                    saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, result.id, "Created insertion")
+                    saveLog(userId, result.id, "Created insertion")
                     res.status(201).send(result);
                 } else {
                     return res.status(400).json({'error':'Erreur survenue lors de la sauvegarde'});
@@ -67,13 +71,15 @@ const createInsertion = async(req, res) => {
 };
 
 const deleteInsertion = async(req, res) => {
-    id = req.body.id;
-    
 
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+
+    id = req.body.id;
     if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
     Insertion.findByIdAndDelete(id,(err, result) => {
         if (!err) {
-            saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Deleted insertion")
+            saveLog(userId, id, "Deleted insertion")
             return res.status(200).json({'success':'Insertion supprimée avec succès'});
         } else {
             return res.status(500).json({'error':'Erreur lors de la suppression'});
@@ -82,6 +88,9 @@ const deleteInsertion = async(req, res) => {
 };
 
 const updateInsertion = async(req, res) => {
+
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
 
     const id = req.body.id;
     const title = req.body.title;
@@ -115,7 +124,7 @@ const updateInsertion = async(req, res) => {
         if(err) {
             return res.status(400).json({'error':'Echec de la modification'});
         } else {
-            saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Modified insertion");
+            saveLog(userId, id, "Modified insertion");
             return res.status(200).json({'success':'Modification réussie'});
         }
     })
@@ -173,6 +182,20 @@ function saveLog(actorId, targetId, action) {
             console.log("Error, couldn't save log");
         }
     });
+}
+
+// fonction de vérification de la validité du token, renvoie null si erreur
+function verifyToken(req, res) {
+    try {
+        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {
+            if (tokenErr) throw new Error(tokenErr);
+            req.auth = decoded;
+        })
+    } catch (e) {
+       res.status(403).json({'error':'Token invalide '+e});
+       return null;
+    }
+    return req.auth.sub;
 }
 
 module.exports = { getInsertions, getInsertionByAge, getByOrganisation , createInsertion, deleteInsertion, updateInsertion };

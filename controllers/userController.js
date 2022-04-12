@@ -45,6 +45,7 @@ const createUser = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
+    if(adminCheck(userId) == false) return res;
 
     let login = req.body.login;
     let email = req.body.email;
@@ -86,6 +87,7 @@ const updateUser = async (req, res) => {
     
     const userId = verifyToken(req, res);
     if (userId == null) return res;
+    if(adminCheck(userId) == false) return res;
 
     let id = req.body.id;
     let login = req.body.login;
@@ -129,32 +131,20 @@ const deleteUser = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
-    User.findById(userId, function(err, docs) {
-
-        if(err) {
-            return res.status(404).json({'error':'Utilisateur introuvable'});
-        } else {
-            if(docs.isAdmin) {
-                id = req.body.id;
-                if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
-                User.findByIdAndDelete(
-                    req.body.id,
-                    (err, result) => {
-                        if (!err) {
-                            saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, req.body.id, "Deleted user");
-                            return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
-                        } else {
-                            return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
-                        }
-                    }
-                )
+    if(adminCheck(userId) == false) return res;
+    id = req.body.id;
+    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
+    User.findByIdAndDelete(
+        req.body.id,
+        (err, result) => {
+            if (!err) {
+                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, req.body.id, "Deleted user");
+                return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
+            } else {
+                return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
             }
         }
-    });
-    
-
-   
+    )   
 }
 
 
@@ -204,6 +194,23 @@ function saveLog(actorId, targetId, action) {
     });
 }
 
+// checks is user retrieved from token has admin rights
+function adminCheck(userId) {
+    User.findById(userId, function (err, result) {
+        if(err) {
+            res.status(404).json({'error':'Utilisateur introuvable'});
+        } else {
+            if (result.isAdmin) {
+                return true;
+            } else {
+                res.status(403).json({'error':'Vous ne disposez pas des droits'});
+            }
+        }
+    })
+    return false;
+}
+
+// fonction de vérification de la validité du token, renvoie null si erreur
 function verifyToken(req, res) {
     try {
         jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {

@@ -27,6 +27,10 @@ const getOrgs = async(req, res) => {
 
 const createOrg = async(req, res) => {
 
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if(adminCheck(userId) == false) return res;
+
     if (checkOrga(req.body.name, res)) return res;
 
     const newOrgRecord = new Orga({
@@ -43,6 +47,10 @@ const createOrg = async(req, res) => {
 };
 
 const updateOrg = async(req, res) => {
+
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if(adminCheck(userId) == false) return res;
 
     let id = req.body.id;
     let name = req.body.name;
@@ -61,6 +69,10 @@ const updateOrg = async(req, res) => {
 };
 
 const deleteOrg = async(req, res) => {
+
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if(adminCheck(userId) == false) return res;
 
     let id = req.body.id;
     if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
@@ -82,6 +94,36 @@ function checkOrga(name, res) {
         return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
 };
+
+// checks is user retrieved from token has admin rights
+function adminCheck(userId) {
+    User.findById(userId, function (err, result) {
+        if(err) {
+            res.status(404).json({'error':'Utilisateur introuvable'});
+        } else {
+            if (result.isAdmin) {
+                return true;
+            } else {
+                res.status(403).json({'error':'Vous ne disposez pas des droits'});
+            }
+        }
+    })
+    return false;
+}
+
+// fonction de vérification de la validité du token, renvoie null si erreur
+function verifyToken(req, res) {
+    try {
+        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {
+            if (tokenErr) throw new Error(tokenErr);
+            req.auth = decoded;
+        })
+    } catch (e) {
+       res.status(403).json({'error':'Token invalide '+e});
+       return null;
+    }
+    return req.auth.sub;
+}
 
 //On exporte nos fonctions
 module.exports = { getOrgs, createOrg, updateOrg, deleteOrg };
