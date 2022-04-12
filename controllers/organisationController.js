@@ -95,16 +95,16 @@ function checkOrga(name, res) {
     if (!ORGA_REGEX.test(name)) {
         return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
-}; <<
-<< << < HEAD
-    ===
-    === =
-
-    // checks is user retrieved from token has admin rights
-    function adminCheck(userId) {
-        User.findById(userId, function(err, result) {
-                    if (err) {
-                        res.status(404).json({ 'error': 'Utilisateur introuvable' });
-                    } else {
-                        if (result.isAdmin) {
-                            return true;
+};
+// checks is user retrieved from token has admin rights
+function adminCheck(userId) {
+    User.findById(userId, function(err, result) {
+        if (err) {
+            res.status(404).json({ 'error': 'Utilisateur introuvable' });
+        } else {
+            if (result.isAdmin) {
+                return true;
+            }
+        }
+    })
+}
