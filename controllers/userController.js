@@ -43,6 +43,9 @@ const getUser = async (req, res) => {
 
 const createUser = async (req, res) => {
 
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+
     let login = req.body.login;
     let email = req.body.email;
     let password = req.body.password;
@@ -75,11 +78,15 @@ const createUser = async (req, res) => {
             });
         }
     }).catch((error) => {
-        return res.status(400).json({ 'error': +error });
+        return res.status(400).json({ 'error': error });
     })
 };
 
 const updateUser = async (req, res) => {
+    
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+
     let id = req.body.id;
     let login = req.body.login;
     let email = req.body.email;
@@ -109,7 +116,7 @@ const updateUser = async (req, res) => {
             if (err) {
                 return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else { // logs are saved only when the action is validated with no error
-                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, id, "Modified user")
+                saveLog(userId, id, "Modified user")
                 return res.status(200).json({ result });
             }
         })
@@ -119,19 +126,35 @@ const updateUser = async (req, res) => {
 
 
 const deleteUser = async (req, res) => {
-    if (!ObjectId.isValid(req.body.id)) return res.status(400).json({ 'error': "L'ID spécifié pour la suppression de l'utilisateur est introuvable" });
 
-    User.findByIdAndDelete(
-        req.body.id,
-        (err, result) => {
-            if (!err) {
-                saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, req.body.id, "Deleted user");
-                return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
-            } else {
-                return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+    User.findById(userId, function(err, docs) {
+
+        if(err) {
+            return res.status(404).json({'error':'Utilisateur introuvable'});
+        } else {
+            if(docs.isAdmin) {
+                id = req.body.id;
+                if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
+                User.findByIdAndDelete(
+                    req.body.id,
+                    (err, result) => {
+                        if (!err) {
+                            saveLog(jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub, req.body.id, "Deleted user");
+                            return res.status(200).json({ 'success': ' Utilisateur supprimé avec succès' });
+                        } else {
+                            return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
+                        }
+                    }
+                )
             }
         }
-    )
+    });
+    
+
+   
 }
 
 
@@ -179,6 +202,19 @@ function saveLog(actorId, targetId, action) {
             console.log("Error, couldn't save log");
         }
     });
+}
+
+function verifyToken(req, res) {
+    try {
+        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {
+            if (tokenErr) throw new Error(tokenErr);
+            req.auth = decoded;
+        })
+    } catch (e) {
+       res.status(403).json({'error':'Token invalide '+e});
+       return null;
+    }
+    return req.auth.sub;
 }
 
 
