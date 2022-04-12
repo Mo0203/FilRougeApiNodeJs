@@ -6,6 +6,8 @@ const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
 const xss = require('xss-clean');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger.json');
 
 const userRoutes = require('./routes/userRoutes');
 const orgRoutes = require('./routes/organisationRoutes');
@@ -27,6 +29,7 @@ app.use('/', orgRoutes);
 app.use('/', insertRoutes);
 app.use('/', audienceRoutes);
 app.use('/', logRoutes);
+app.use('/doc', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 
 mongoose.connect(process.env.MONGO_URL)
