@@ -49,45 +49,48 @@ const getLog = async (req, res) => {
                     }
                 });
             }
+        }
+    })
+}
 
 
-            const getLogByUser = async (req, res) => {
-                const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
-                if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
+const getLogByUser = async (req, res) => {
+    const userId = jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET).sub;
+    if (!ObjectId.isValid(userId)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
 
-                User.findById(userId, function (err, docs) {
-                    if (err) {
-                        return res.status(404).json({ 'error': 'Utilisateur introuvable' });
+    User.findById(userId, function (err, docs) {
+        if (err) {
+            return res.status(404).json({ 'error': 'Utilisateur introuvable' });
+        } else {
+            if (docs.isAdmin) {
+                const id = req.body.userId;
+                Log.find(({ userId: id }), (logErr, result) => {
+                    if (!logErr) {
+                        res.status(200).send(result);
+
                     } else {
-                        if (docs.isAdmin) {
-                            const id = req.body.userId;
-                            Log.find(({ userId: id }), (logErr, result) => {
-                                if (!logErr) {
-                                    res.status(200).send(result);
-
-                                } else {
-                                    Return.res.staus(500).json({ 'error': ' Erreur lors de la reqête des logs' })
-                                }
-                            })
-                        }
+                        Return.res.staus(500).json({ 'error': ' Erreur lors de la reqête des logs' })
                     }
                 })
             }
+        }
+    })
+}
 
 
-            const deleteLog = async (req, res) => {
-                id = req.body.id;
+const deleteLog = async (req, res) => {
+    id = req.body.id;
 
 
-                if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'Le log spécifié n\'existe  pas' });
-                Log.findByIdAndDelete(id, (err, result) => {
-                    if (!err) {
-                        return res.status(200).json({ 'success': 'Log supprimée avec succès' });
-                    } else {
-                        return res.status(500).json({ 'error': 'Erreur lors de la suppression' });
-                    }
-                })
-            }
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'Le log spécifié n\'existe  pas' });
+    Log.findByIdAndDelete(id, (err, result) => {
+        if (!err) {
+            return res.status(200).json({ 'success': 'Log supprimée avec succès' });
+        } else {
+            return res.status(500).json({ 'error': 'Erreur lors de la suppression' });
+        }
+    })
+}
 
 
-            module.exports = { getLogs, getLog, getLogByUser, deleteLog }
+module.exports = { getLogs, getLog, getLogByUser, deleteLog }

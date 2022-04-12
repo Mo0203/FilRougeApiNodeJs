@@ -6,14 +6,14 @@ const {
     getLogs,
     getLog,
     getLogByUser,
-    //deleteLog,
+    deleteLog,
 
 } = require('../controllers/logController.js');
 
 router.get('/log', getLogs);
 router.post('/log', getLog);
 router.post('/logByUser', getLogByUser);
-router.deleteLog('/log', deleteLog);
+router.delete('/log', deleteLog);
 
 
 module.exports = router;
