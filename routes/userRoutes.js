@@ -1,6 +1,7 @@
 const express = require('express');
-
+const jwt = require('jsonwebtoken');
 const router = express.Router();
+
 
 const {
     createUser,
@@ -11,7 +12,7 @@ const {
 
 router.post('/register', createUser);
 router.post('/login', getUser);
-router.post('/updateUser', updateUser);
-router.post('/deleteUser', deleteUser);
+router.put('/user', updateUser);
+router.delete('/user', deleteUser);
 
 module.exports = router;

@@ -27,7 +27,11 @@ const getOrgs = async(req, res) => {
 
 const createOrg = async(req, res) => {
 
-    if (checkOrg(req.body.name, res)) return res;
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if (adminCheck(userId) == false) return res;
+
+    if (checkOrga(req.body.name, res)) return res;
 
     const newOrgRecord = new Orga({
         name: req.body.name
@@ -37,12 +41,16 @@ const createOrg = async(req, res) => {
         if (!err) {
             res.status(201).send(result);
         } else {
-            return res.status(400).json({ 'error': +err });
+            return res.status(400).json({ 'error': 'Erreur survenue lors de la sauvegarde' });
         }
     })
 };
 
 const updateOrg = async(req, res) => {
+
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if (adminCheck(userId) == false) return res;
 
     let id = req.body.id;
     let name = req.body.name;
@@ -55,14 +63,18 @@ const updateOrg = async(req, res) => {
         }
     }, { new: true }, function(err, result) {
         if (err) {
-            return res.status(400).json({ 'error': 'Echec de la modification' });
+            return res.status(500).json({ 'error': 'Echec de la modification' });
         } else {
             return res.status(200).json({ 'success': 'Modification réussie' });
         }
     })
-}
+};
 
 const deleteOrg = async(req, res) => {
+
+    const userId = verifyToken(req, res);
+    if (userId == null) return res;
+    if (adminCheck(userId) == false) return res;
 
     let id = req.body.id;
     if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
@@ -73,17 +85,26 @@ const deleteOrg = async(req, res) => {
             return res.status(500).json({ 'error': 'Erreur lors de la suppression' });
         }
     })
-}
+};
 
 
-function checkOrg(name, res) {
+function checkOrga(name, res) {
     if (name == "" || name == null) {
         return res.status(400).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
     }
     if (!ORGA_REGEX.test(name)) {
         return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
-};
+}; <<
+<< << < HEAD
+    ===
+    === =
 
-//On exporte nos fonctions
-module.exports = { getOrgs, createOrg, updateOrg, deleteOrg };
+    // checks is user retrieved from token has admin rights
+    function adminCheck(userId) {
+        User.findById(userId, function(err, result) {
+                    if (err) {
+                        res.status(404).json({ 'error': 'Utilisateur introuvable' });
+                    } else {
+                        if (result.isAdmin) {
+                            return true;
