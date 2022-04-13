@@ -3,19 +3,19 @@ const ObjectId = require('mongoose').Types.ObjectId;
 
 const getAudience = async(req, res) => {
 
-    // #swagger.tags = ['Public ciblé']
-    // #swagger.description = "liste des publics ciblés présent dans la base de données"
+    /*
+    #swagger.tags = ['Public ciblé']
+    #swagger.description = "liste des publics ciblés présent dans la base de données"   
 
-    /* #swagger.responses[200] = { 
+    #swagger.responses[200] = { 
             content : "application/json",
-            schema:  {$ref: "#/definitions/insertion"},
+            schema:  {$ref: "#/definitions/audience"},
             description: 'liste des dispositifs reçues avec succès.' 
            } 
-           #swagger.security = [{
-               "jwt": []
-        }]
            
-           */
+
+    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'}          
+    */
 
 
     const target = req.body.target;
@@ -36,7 +36,31 @@ const getAudience = async(req, res) => {
 
 const createAudience = async(req, res) => {
 
-    /*  #swagger.security : { "jwt" : [] } */
+    /*  
+    #swagger.tags = ['Public ciblé']
+    #swagger.description = "Ajouter un public ciblé dans la base de données" 
+
+    #swagger.security = [{ "jwt" : [] }]
+    
+    #swagger.parameters['target'] = {
+        in: 'body',
+        required: true,
+        description: 'dénomination du public ciblé (exemple: sans emploi)',
+        type: 'string'
+    }
+
+    #swagger.responses[201] = { 
+            content : "application/json",
+            schema:  {$ref: "#/definitions/audience"},
+            description: 'public cible ajouté à la base de données avec succès.' 
+           }            
+
+    #swagger.responses[403] = {description: 'Token invalide.'}
+    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
+    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
+    
+    */
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
@@ -58,6 +82,36 @@ const createAudience = async(req, res) => {
 };
 
 const updateAudience = async(req, res) => {
+
+    /*  
+    #swagger.tags = ['Public ciblé']
+    #swagger.description = "Modifier un public ciblé dans la base de données" 
+
+    #swagger.security = [{ "jwt" : [] }]
+    
+
+    #swagger.parameters['obj'] = {
+        in: 'body',
+        required: true,
+        description: 'données à modifier',
+        schema: {
+            id: 'id de l\'élément à modifier',
+            target: 'dénomination du public ciblé (exemple: sans emploi)'
+        }
+    }
+
+    #swagger.responses[201] = { 
+            content : "application/json",
+            schema:  {$ref: "#/definitions/audience"},
+            description: 'public cible modifié dans la base de données avec succès.' 
+           }           
+
+    #swagger.responses[403] = {description: 'Token invalide.'}
+    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
+    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
+    
+    */
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
@@ -81,6 +135,32 @@ const updateAudience = async(req, res) => {
 };
 
 const deleteAudience = async(req, res) => {
+
+    /*  
+    #swagger.tags = ['Public ciblé']
+    #swagger.description = "Supprimer un public ciblé dans la base de données" 
+
+    #swagger.security = [{ "jwt" : [] }]
+    
+    #swagger.parameters['id'] = {
+        in: 'body',
+        required: true,
+        description: 'id de l\'élément à supprimer',
+        type: 'string'
+    }
+
+    #swagger.responses[200] = { 
+            content : "application/json",
+            schema:  {$ref: "#/definitions/audience"},
+            description: 'public cible supprimé de la base de données avec succès.' 
+           }            
+
+    #swagger.responses[403] = {description: 'Token invalide.'}
+    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
+    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
+    
+    */
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;

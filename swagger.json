@@ -27,10 +27,13 @@
   "paths": {
     "/audience": {
       "post": {
-        "description": "",
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Ajouter un public ciblé dans la base de données",
         "parameters": [
           {
-            "name": "body",
+            "name": "target",
             "in": "body",
             "schema": {
               "type": "object",
@@ -39,18 +42,37 @@
                   "example": "any"
                 }
               }
-            }
+            },
+            "required": true,
+            "description": "dénomination du public ciblé (exemple: sans emploi)"
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "public cible ajouté à la base de données avec succès.",
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/audience"
+            }
           },
           "400": {
             "description": "Bad Request"
+          },
+          "403": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
+          },
+          "404": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "500": {
+            "description": "une erreur serveur est survenue."
           }
         },
-        "security": []
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
       },
       "get": {
         "tags": [
@@ -63,14 +85,65 @@
             "description": "liste des dispositifs reçues avec succès.",
             "content": "application/json",
             "schema": {
-              "$ref": "#/definitions/insertion"
+              "$ref": "#/definitions/audience"
             }
           },
           "204": {
             "description": "No Content"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "une erreur serveur est survenue."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Modifier un public ciblé dans la base de données",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "required": true,
+            "description": "données à modifier",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "id de l'élément à modifier"
+                },
+                "target": {
+                  "type": "string",
+                  "example": "dénomination du public ciblé (exemple: sans emploi)"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/audience"
+            },
+            "description": "public cible modifié dans la base de données avec succès."
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
+          },
+          "404": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "500": {
+            "description": "une erreur serveur est survenue."
           }
         },
         "security": [
@@ -79,42 +152,14 @@
           }
         ]
       },
-      "put": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "target": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
       "delete": {
-        "description": "",
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Supprimer un public ciblé dans la base de données",
         "parameters": [
           {
-            "name": "body",
+            "name": "id",
             "in": "body",
             "schema": {
               "type": "object",
@@ -123,117 +168,37 @@
                   "example": "any"
                 }
               }
-            }
+            },
+            "required": true,
+            "description": "id de l'élément à supprimer"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "public cible supprimé de la base de données avec succès.",
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/audience"
+            }
           },
           "400": {
             "description": "Bad Request"
           },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/log": {
-      "get": {
-        "description": "",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK"
+          "403": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
+          },
+          "404": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "une erreur serveur est survenue."
           }
-        }
-      },
-      "post": {
-        "description": "",
-        "parameters": [
+        },
+        "security": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
+            "jwt": []
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/logByUser": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
+        ]
       }
     },
     "/insertion": {
@@ -576,45 +541,12 @@
         }
       }
     },
-    "/register": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "login": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "organisation": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
     "/login": {
       "post": {
-        "description": "",
+        "tags": [
+          "Utilisateur"
+        ],
+        "description": "Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\\'autorisation",
         "parameters": [
           {
             "name": "body",
@@ -634,20 +566,27 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Utilisateur trouvé dans la base de données.",
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/userResponse"
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Le format de l'email est invalide"
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "une erreur serveur est survenue."
           }
         }
       }
     },
     "/user": {
       "put": {
-        "description": "",
+        "tags": [
+          "Utilisateur"
+        ],
+        "description": "modifier les informations d'un utilisateur",
         "parameters": [
           {
             "name": "body",
@@ -678,13 +617,31 @@
           "200": {
             "description": "OK"
           },
+          "201": {
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/user"
+            },
+            "description": "Utilisateur modifié dans la base de données avec succès."
+          },
           "400": {
             "description": "Bad Request"
           },
+          "403": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
+          },
+          "404": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "une erreur serveur est survenue."
           }
-        }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
       },
       "delete": {
         "description": "",
@@ -819,6 +776,40 @@
         "target": {
           "type": "string",
           "example": "public ciblé"
+        }
+      }
+    },
+    "userResponse": {
+      "type": "object",
+      "properties": {
+        "User": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string",
+              "example": "Jean Guerin"
+            },
+            "email": {
+              "type": "string",
+              "example": "Jean-Guerin@gmail.com"
+            },
+            "password": {
+              "type": "string",
+              "example": "*********"
+            },
+            "organisation": {
+              "type": "string",
+              "example": "Service Militaire Volontaire"
+            },
+            "date": {
+              "type": "string",
+              "example": "date de création du profil"
+            }
+          }
+        },
+        "token": {
+          "type": "string",
+          "example": "jeton d'autorisation"
         }
       }
     }

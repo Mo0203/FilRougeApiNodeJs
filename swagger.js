@@ -1,7 +1,7 @@
 const swaggerAutogen = require('swagger-autogen')();
 
 const outputFile = './swagger.json';
-const endpointsFiles = ['./routes/audienceRoutes.js', './routes/logRoutes.js', './routes/insertionRoutes.js', './routes/organisationRoutes.js', './routes/userRoutes.js'];
+const endpointsFiles = ['./routes/audienceRoutes.js', './routes/insertionRoutes.js', './routes/organisationRoutes.js', './routes/userRoutes.js'];
 
 const doc = {
     info: {
@@ -50,6 +50,16 @@ const doc = {
         audience: {
             target: "public ciblé"
         },
+        userResponse: {
+            User: {
+                login: "Jean Guerin",
+                email: "Jean-Guerin@gmail.com",
+                password: "*********",
+                organisation: "Service Militaire Volontaire",
+                date: "date de création du profil"
+            },
+            token: "jeton d'autorisation"
+        }
     }
 };
 
