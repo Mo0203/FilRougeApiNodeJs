@@ -11,6 +11,13 @@
     "http",
     "https"
   ],
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "consumes": [
     "application/json"
   ],
@@ -42,14 +49,22 @@
           "400": {
             "description": "Bad Request"
           }
-        }
+        },
+        "security": []
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "liste des publics ciblés présent dans la base de données",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "liste des dispositifs reçues avec succès.",
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/insertion"
+            }
           },
           "204": {
             "description": "No Content"
@@ -57,7 +72,12 @@
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
       },
       "put": {
         "description": "",
