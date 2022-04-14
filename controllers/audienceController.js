@@ -2,6 +2,20 @@ const Audience = require('../models/audienceModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
 
 const getAudience = async (req, res) => {
+    /*  #swagger.tags = ['Public ciblé']
+
+        #swagger.description = 'Liste des publics ciblés présents dans la base de données.'
+
+        #swagger.responses[200] = { 
+            description: 'Requête reussie, la liste des publics ciblés présents dans la base de données est reçue correctement.',
+            content:"application/json",
+            schema: {$ref: "#/definitions/audience"}}
+        #swagger.responses[204] = {
+             description: 'Requête reussie, mais il n\'existe aucun contenu à renvoyer.'}
+        #swagger.responses[500] = {
+             description: 'Erreur interne'}
+    */
+
     const target = req.body.target;
 
     Audience.findOne({ target: target })
@@ -18,6 +32,34 @@ const getAudience = async (req, res) => {
 };
 
 const createAudience = async (req, res) => {
+
+
+    /*  #swagger.tags = ['Public ciblé']
+
+        #swagger.description = 'Ajouter un public ciblé dans la base de données'
+
+        #swagger.parameters['target'] = {description: "Dénomination du public ciblé"}
+
+         #swagger.security = [{
+            "JWT": []
+        }]
+
+        #swagger.responses[201] = { 
+            description: 'Requête reussie, public ciblé correctement ajouté à la base de données.'}
+        #swagger.responses[400] = {
+             description: 'Mauvaise requête, les informations envoyées ne peuvent pas être traitées.'}
+         #swagger.responses[403] = {
+             description: 'Requête exécutée, accès interdit, token invalide.'}
+        #swagger.responses[403] = {
+             description: 'Requête exécutée, accès interdit, l\'utilisateur ne dispose pas des droits. (il n'est pas administrateur)'}
+        #swagger.responses[404] = {
+             description: 'Requête exécutée, utilisateur non-trouvé.'}
+        #swagger.responses[500] = {
+             description: 'Erreur interne.'}
+    */
+
+
+
     const userId = verifyToken(req, res);
     if (userId == null) return res;
     if (adminCheck(userId) == false) return res;
@@ -38,7 +80,30 @@ const createAudience = async (req, res) => {
 };
 
 const updateAudience = async (req, res) => {
+    /*  #swagger.tags = ['Public ciblé']
 
+        #swagger.description = 'Modifier un public ciblé dans la base de données'
+
+        #swagger.parameters['target'] = {description: "Dénomination du public ciblé"}
+        #swagger.operationId['id'] = {description: "Dénomination du public ciblé"}
+
+         #swagger.security = [{
+            "JWT": []
+        }]
+
+        #swagger.responses[200] = { 
+            description: 'Requête reussie, public ciblé correctement modifié dans la base de données.'}
+        #swagger.responses[400] = {
+             description: 'Mauvaise requête, les informations envoyées ne peuvent pas être traitées.'}
+         #swagger.responses[403] = {
+             description: 'Requête exécutée, accès interdit, token invalide.'}
+        #swagger.responses[403] = {
+             description: 'Requête exécutée, accès interdit, l\'utilisateur ne dispose pas des droits. (il n'est pas administrateur)'}
+        #swagger.responses[404] = {
+             description: 'Requête exécutée, utilisateur non-trouvé.'}
+        #swagger.responses[500] = {
+             description: 'Erreur interne.'}
+    */
     const userId = verifyToken(req, res);
     if (userId == null) return res;
     if (adminCheck(userId) == false) return res;
@@ -61,6 +126,30 @@ const updateAudience = async (req, res) => {
 };
 
 const deleteAudience = async (req, res) => {
+    /*  #swagger.tags = ['Public ciblé']
+
+        #swagger.description = 'Effacer un public ciblé dans la base de données'
+
+        #swagger.parameters['target'] = {description: "Dénomination du public ciblé"}
+        #swagger.operationId['id'] = {description: "Dénomination du public ciblé"}
+
+         #swagger.security = [{
+            "JWT": []
+        }]
+
+        #swagger.responses[201] = { 
+            description: 'Requête reussie, public ciblé correctement ajouté à la base de données.'}
+        #swagger.responses[400] = {
+             description: 'Mauvaise requête, les informations envoyées ne peuvent pas être traitées.'}
+         #swagger.responses[403] = {
+             description: 'Requête exécutée, accès interdit, token invalide.'}
+        #swagger.responses[427] = {
+             description: 'Requête exécutée, accès interdit, l\'utilisateur ne dispose pas des droits. (il n'est pas administrateur)'}
+        #swagger.responses[426] = {
+             description: 'Requête exécutée, utilisateur non-trouvé.'}
+        #swagger.responses[500] = {
+             description: 'Erreur interne.'}
+    */
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;

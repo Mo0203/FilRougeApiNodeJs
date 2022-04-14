@@ -14,6 +14,15 @@ const doc = {
     schemes: ['http', 'https'],
     consumes: ['application/json'],
     produces: ['application/json'],
+
+    securityDefinitions: {
+        JWT: {
+            type: 'apiKey',
+            in: 'header',
+            name: 'Authorization'
+        }
+    },
+
     definitions: {
         User: {
             login: "Jean Guerin",

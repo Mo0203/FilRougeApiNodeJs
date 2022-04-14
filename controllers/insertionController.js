@@ -91,9 +91,6 @@ const updateInsertion = async (req, res) => {
     const userId = verifyToken(req, res);
     if (userId == null) return res;
 
-    const userId = verifyToken(req, res);
-    if (userId == null) return res;
-
     const id = req.body.id;
     const title = req.body.title;
     const min_age = req.body.min_age;

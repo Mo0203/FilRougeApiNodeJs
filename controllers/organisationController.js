@@ -26,10 +26,6 @@ const getOrgs = async (req, res) => {
 };
 
 const createOrg = async (req, res) => {
-    const userId = verifyToken(req, res);
-    if (userId == null) return res;
-    if (adminCheck(userId) == false) return res;
-
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
@@ -51,9 +47,6 @@ const createOrg = async (req, res) => {
 };
 
 const updateOrg = async (req, res) => {
-    const userId = verifyToken(req, res);
-    if (userId == null) return res;
-    if (adminCheck(userId) == false) return res;
 
 
     const userId = verifyToken(req, res);
@@ -79,11 +72,6 @@ const updateOrg = async (req, res) => {
 };
 
 const deleteOrg = async (req, res) => {
-    const userId = verifyToken(req, res);
-    if (userId == null) return res;
-    if (adminCheck(userId) == false) return res;
-
-
     const userId = verifyToken(req, res);
     if (userId == null) return res;
     if (adminCheck(userId) == false) return res;
