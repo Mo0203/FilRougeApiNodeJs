@@ -28,8 +28,7 @@ const getLog = async (req, res) => {
     Log.findById(id, function (err, docs) {
         if (err) {
             return res.status(500).json({ 'error': 'Aucun element correspondant' });
-        }
-        else {
+        } else {
             res.status(200).send(docs);
         }
     });
@@ -74,12 +73,12 @@ const deleteLog = async (req, res) => {
 function adminCheck(userId) {
     User.findById(userId, function (err, result) {
         if (err) {
-            res.status(404).json({ 'error': 'Utilisateur introuvable' });
+            res.status(426).json({ 'error': 'Utilisateur introuvable' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(403).json({ 'error': 'Vous ne disposez pas des droits' });
+                res.status(427).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })

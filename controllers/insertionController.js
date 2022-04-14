@@ -157,13 +157,13 @@ const getByOrganisation = async (req, res) => {
 
 function checkInsert(title, min_age, max_age, url, res) {
     if (title == "" || title == null) {
-        return res.status(400).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
+        return res.status(428).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
     }
     if (min_age > max_age) {
-        return res.status(400).json({ 'error': 'L\'age maximum doit être supérieur au minimum' });
+        return res.status(429).json({ 'error': 'L\'age maximum doit être supérieur au minimum' });
     }
     if (!(max_age > 0 && min_age > 0)) {
-        return res.status(400).json({ 'error': 'Veuillez entrer un age valide' });
+        return res.status(430).json({ 'error': 'Veuillez entrer un age valide' });
     }
     if (!(url.substring(0, 5) == "https")) {
         modifUrl = true;
