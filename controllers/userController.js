@@ -15,8 +15,7 @@ const getUser = async (req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
-    #swagger.description = 'Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\'autorisation'
-    
+    #swagger.description = 'Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\'autorisation.'
     #swagger.parameters['obj'] = {
         in: 'body',
         required: true,
@@ -27,21 +26,19 @@ const getUser = async (req, res) => {
             password: 'le mot de passe de l\'utilisateur'
         }
     }
-
     #swagger.responses[200] = { 
             content : "application/json",
             schema:  {$ref: "#/definitions/userResponse"},
             description: 'Utilisateur trouvé dans la base de données.' 
            }            
-
     #swagger.responses[404] = {description: 'Email introuvable, l\'utilisateur n\'existe pas dans la base de données.'}
-    #swagger.responses[432] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect'}
-    #swagger.responses[420] = {description: 'L\'email n\'a pas été renseigné'}
-    #swagger.responses[421] = {description: 'Le format de l\'email est invalide'}
-    #swagger.responses[433] = {description: 'Erreur lors du chiffrage du mot de passe'}
-    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
-    
+    #swagger.responses[432] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect.'}
+    #swagger.responses[420] = {description: 'L\'email n\'a pas été renseigné.'}
+    #swagger.responses[421] = {description: 'Le format de l\'email est invalide.'}
+    #swagger.responses[433] = {description: 'Erreur lors du chiffrage du mot de passe.'}
+    #swagger.responses[500] = {description: 'Une erreur serveur est survenue.'} 
     */
+
     let email = req.body.email;
     let password = req.body.password;
 
@@ -56,13 +53,11 @@ const getUser = async (req, res) => {
                     if (boolCrypt) {
                         res.status(200).send({ "user": user, "token": generateToken(user.id) });
                     } else if (!boolCrypt) {
-                        return res.status(432).json({ 'error': 'Mot de passe incorrect' });
+                        return res.status(432).json({ 'error': 'Une erreur est survenue dans le mot de passe.' });
                     } else {
                         return res.status(433).json({ 'error': 'Une erreur est survenue' + err });
                     }
                 })
-
-
             }
         })
         .catch((err) => {
@@ -89,7 +84,7 @@ const createUser = async (req, res) => {
 
     User.findOne({ email: email }).then((user) => {
         if (user) {
-            return res.status(400).json({ 'error': 'l\'email est déjà utilisé' });
+            return res.status(400).json({ 'error': 'L\'email est déjà utilisé' });
         } else {
             bcrypt.genSalt(10, function (err, salt) {
                 bcrypt.hash(password, salt, function (err, hashedPass) {
@@ -104,7 +99,7 @@ const createUser = async (req, res) => {
                         if (!err) {
                             return res.status(201).send(result);
                         } else {
-                            return res.status(400).json({ 'error': 'erreur lors de la création du nouvel utilisateur :', err });
+                            return res.status(400).json({ 'error': 'Erreur lors de la création du nouvel utilisateur :', err });
                         }
                     });
                 });
@@ -119,8 +114,7 @@ const updateUser = async (req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
-    #swagger.description = 'Modifier les informations d\'un utilisateur' 
-
+    #swagger.description = 'Modifier les informations d\'un utilisateur.' 
     #swagger.security = [{ "jwt" : [] }]
     
     #swagger.parameters['obj'] = {
@@ -135,13 +129,11 @@ const updateUser = async (req, res) => {
             organisation: 'l\'organisme auquel l\'utilisateur est rattaché'
         }
     }
-
     #swagger.responses[201] = { 
             content : "application/json",
             schema:  {$ref: "#/definitions/user"},
             description: 'Utilisateur modifié dans la base de données avec succès.' 
            }            
-
     #swagger.responses[403] = {description: 'Token invalide.'}
     #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
     #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
@@ -159,7 +151,7 @@ const updateUser = async (req, res) => {
     let password = req.body.password;
     let organisation = req.body.organisation;
 
-    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': "L'ID spécifié pour la mise à jour de l'utilisateur est introuvable" });
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': "L'ID spécifiée pour la mise à jour de l'utilisateur est introuvable" });
 
     if (checkUser(login, password, organisation, res)) return res;
     if (checkEmail(email, res)) return res;
