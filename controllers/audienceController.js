@@ -56,8 +56,8 @@ const createAudience = async(req, res) => {
            }            
 
     #swagger.responses[403] = {description: 'Token invalide.'}
-    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
-    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
     #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
     
     */
@@ -107,8 +107,8 @@ const updateAudience = async(req, res) => {
            }           
 
     #swagger.responses[403] = {description: 'Token invalide.'}
-    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
-    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
     #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
     
     */
@@ -156,8 +156,8 @@ const deleteAudience = async(req, res) => {
            }            
 
     #swagger.responses[403] = {description: 'Token invalide.'}
-    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
-    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
     #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
     
     */
@@ -181,12 +181,12 @@ const deleteAudience = async(req, res) => {
 function adminCheck(userId) {
     User.findById(userId, function(err, result) {
         if (err) {
-            res.status(404).json({ 'error': 'Utilisateur introuvable' });
+            res.status(426).json({ 'error': 'Utilisateur introuvable' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(403).json({ 'error': 'Vous ne disposez pas des droits' });
+                res.status(427).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })

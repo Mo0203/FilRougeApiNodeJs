@@ -90,22 +90,22 @@ const deleteOrg = async(req, res) => {
 
 function checkOrga(name, res) {
     if (name == "" || name == null) {
-        return res.status(400).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
+        return res.status(428).json({ 'error': 'Veuillez renseigner le nom de l\'organisation' });
     }
     if (!ORGA_REGEX.test(name)) {
-        return res.status(400).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
+        return res.status(431).json({ 'error': 'Nom d\'organisation invalide (pas de caractères spéciaux)' });
     }
 };
 // checks is user retrieved from token has admin rights
 function adminCheck(userId) {
     User.findById(userId, function(err, result) {
         if (err) {
-            res.status(404).json({ 'error': 'Utilisateur introuvable' });
+            res.status(426).json({ 'error': 'Utilisateur introuvable' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(403).json({ 'error': 'Vous ne disposez pas des droits' });
+                res.status(427).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })

@@ -34,10 +34,11 @@ const getUser = async(req, res) => {
             description: 'Utilisateur trouvé dans la base de données.' 
            }            
 
-    #swagger.responses[400] = {description: 'Email introuvable, l\'utilisateur n\'existe pas dans la base de données.'}
-    #swagger.responses[400] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect'}
-    #swagger.responses[400] = {description: 'L\'email n\'a pas été renseigné'}
-    #swagger.responses[400] = {description: 'Le format de l\'email est invalide'}
+    #swagger.responses[404] = {description: 'Email introuvable, l\'utilisateur n\'existe pas dans la base de données.'}
+    #swagger.responses[432] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect'}
+    #swagger.responses[420] = {description: 'L\'email n\'a pas été renseigné'}
+    #swagger.responses[421] = {description: 'Le format de l\'email est invalide'}
+    #swagger.responses[433] = {description: 'Erreur lors du chiffrage du mot de passe'}
     #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
     
     */
@@ -49,15 +50,15 @@ const getUser = async(req, res) => {
     User.findOne({ email: email })
         .then((user) => {
             if (!user) {
-                return res.status(400).json({ 'error': 'Email introuvable' });
+                return res.status(404).json({ 'error': 'Email introuvable' });
             } else {
                 bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
                         res.status(200).send({ "user": user, "token": generateToken(user.id) });
                     } else if (!boolCrypt) {
-                        return res.status(400).json({ 'error': 'Mot de passe incorrect' });
+                        return res.status(432).json({ 'error': 'Mot de passe incorrect' });
                     } else {
-                        return res.status(400).json({ 'error': 'Une erreur est survenue' + err });
+                        return res.status(433).json({ 'error': 'Une erreur est survenue' + err });
                     }
                 })
 
@@ -142,8 +143,8 @@ const updateUser = async(req, res) => {
            }            
 
     #swagger.responses[403] = {description: 'Token invalide.'}
-    #swagger.responses[403] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
-    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
     #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
     
     */
@@ -166,7 +167,7 @@ const updateUser = async(req, res) => {
     var salt = bcrypt.genSaltSync(10);
     bcrypt.hash(password, salt, (err, hashedPass) => {
         if (err) {
-            return res.status(500).json({ 'error': 'Une erreur est survenue lors de la sécurisation du mot de passe' });
+            return res.status(433).json({ 'error': 'Une erreur est survenue lors de la sécurisation du mot de passe' });
         }
 
 
@@ -214,26 +215,26 @@ const deleteUser = async(req, res) => {
 // email regex and not null checker 
 function checkEmail(email, res) {
     if (email == "" || email == null) {
-        return res.status(400).json({ 'error': 'Veuillez renseigner votre email' });
+        return res.status(420).json({ 'error': 'Veuillez renseigner votre email' });
     }
     if (!EMAIL_REGEX.test(email)) {
-        return res.status(400).json({ 'error': 'Email invalide' });
+        return res.status(421).json({ 'error': 'Email invalide' });
     }
 }
 
 // User entry checker to securise password and prevent null strings
 function checkUser(login, password, organisation, res) {
     if (login == "" || login == null) {
-        return res.status(400).json({ 'error': 'Veuillez renseigner votre nom' });
+        return res.status(422).json({ 'error': 'Veuillez renseigner votre nom' });
     }
     if (!LOGIN_REGEX.test(login)) {
-        return res.status(400).json({ 'error': 'Nom d\'utilisateur invalide' });
+        return res.status(423).json({ 'error': 'Nom d\'utilisateur invalide' });
     }
     if (!PASSWORD_REGEX.test(password)) {
-        return res.status(400).json({ 'error': 'Le mot de passe doit contenir au moins 8 caractères dont une majuscule et un chiffre' });
+        return res.status(424).json({ 'error': 'Le mot de passe doit contenir au moins 8 caractères dont une majuscule et un chiffre' });
     }
     if (organisation == "" || organisation == null) {
-        return res.status(400).json({ 'error': 'Veuillez sélectionner une organisation' });
+        return res.status(425).json({ 'error': 'Veuillez sélectionner une organisation' });
     }
 }
 
@@ -261,12 +262,12 @@ function saveLog(actorId, targetId, action) {
 function adminCheck(userId) {
     User.findById(userId, function(err, result) {
         if (err) {
-            res.status(404).json({ 'error': 'Utilisateur introuvable' });
+            res.status(426).json({ 'error': 'Utilisateur introuvable' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(403).json({ 'error': 'Vous ne disposez pas des droits' });
+                res.status(427).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })
