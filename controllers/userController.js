@@ -15,16 +15,16 @@ const getUser = async(req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
-    #swagger.description = "Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\'autorisation" 
+    #swagger.description = 'Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\'autorisation'
     
     #swagger.parameters['obj'] = {
         in: 'body',
         required: true,
         description: 'données de l\'utilisateur',
-        type: 'string'
+        type: 'string',
         schema: {
-            email: "l\'email de l\'utilisateur",
-            password: "le mot de passe de l\'utilisateur"
+            email: 'l\'email de l\'utilisateur',
+            password: 'le mot de passe de l\'utilisateur'
         }
     }
 
@@ -119,7 +119,7 @@ const updateUser = async(req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
-    #swagger.description = "modifier les informations d'un utilisateur" 
+    #swagger.description = 'modifier les informations d\'un utilisateur' 
 
     #swagger.security = [{ "jwt" : [] }]
     
@@ -128,11 +128,11 @@ const updateUser = async(req, res) => {
         required: true,
         description: 'données de l\'utilisateur',
         schema: {
-            id: "l'identifiant de l'utilisateur à modifier",
-            login: "le nom de l'utilisateur",
-            email: "l'email de l'utilisateur"
-            password: "le mot de passe de l'utilisateur",
-            organisation: "l'organisme auquel l'utilisateur est rattaché"
+            id: 'l\'identifiant de l\'utilisateur à modifier',
+            login: 'le nom de l\'utilisateur',
+            email: 'l\'email de l\'utilisateur',
+            password: 'le mot de passe de l\'utilisateur',
+            organisation: 'l\'organisme auquel l\'utilisateur est rattaché'
         }
     }
 

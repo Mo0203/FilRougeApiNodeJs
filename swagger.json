@@ -59,10 +59,13 @@
             "description": "Bad Request"
           },
           "403": {
-            "description": "L'utilisateur ne dispose pas des droits suffisants"
+            "description": "Token invalide."
           },
-          "404": {
+          "426": {
             "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "427": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
           },
           "500": {
             "description": "une erreur serveur est survenue."
@@ -137,10 +140,13 @@
             "description": "Bad Request"
           },
           "403": {
-            "description": "L'utilisateur ne dispose pas des droits suffisants"
+            "description": "Token invalide."
           },
-          "404": {
+          "426": {
             "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "427": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
           },
           "500": {
             "description": "une erreur serveur est survenue."
@@ -185,10 +191,13 @@
             "description": "Bad Request"
           },
           "403": {
-            "description": "L'utilisateur ne dispose pas des droits suffisants"
+            "description": "Token invalide."
           },
-          "404": {
+          "426": {
             "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "427": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
           },
           "500": {
             "description": "une erreur serveur est survenue."
@@ -549,16 +558,20 @@
         "description": "Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\\'autorisation",
         "parameters": [
           {
-            "name": "body",
+            "name": "obj",
             "in": "body",
+            "required": true,
+            "description": "données de l'utilisateur",
             "schema": {
               "type": "object",
               "properties": {
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "l'email de l'utilisateur"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "le mot de passe de l'utilisateur"
                 }
               }
             }
@@ -572,8 +585,20 @@
               "$ref": "#/definitions/userResponse"
             }
           },
-          "400": {
+          "404": {
+            "description": "Email introuvable, l'utilisateur n'existe pas dans la base de données."
+          },
+          "420": {
+            "description": "L'email n'a pas été renseigné"
+          },
+          "421": {
             "description": "Le format de l'email est invalide"
+          },
+          "432": {
+            "description": "L'utilisateur trouvé mais mot de passe incorrect"
+          },
+          "433": {
+            "description": "Erreur lors du chiffrage du mot de passe"
           },
           "500": {
             "description": "une erreur serveur est survenue."
@@ -586,28 +611,35 @@
         "tags": [
           "Utilisateur"
         ],
-        "description": "modifier les informations d'un utilisateur",
+        "description": "modifier les informations d\\'un utilisateur",
         "parameters": [
           {
-            "name": "body",
+            "name": "obj",
             "in": "body",
+            "required": true,
+            "description": "données de l'utilisateur",
             "schema": {
               "type": "object",
               "properties": {
                 "id": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "l'identifiant de l'utilisateur à modifier"
                 },
                 "login": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "le nom de l'utilisateur"
                 },
                 "email": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "l'email de l'utilisateur"
                 },
                 "password": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "le mot de passe de l'utilisateur"
                 },
                 "organisation": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "l'organisme auquel l'utilisateur est rattaché"
                 }
               }
             }
@@ -628,10 +660,16 @@
             "description": "Bad Request"
           },
           "403": {
+            "description": "Token invalide."
+          },
+          "426": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "427": {
             "description": "L'utilisateur ne dispose pas des droits suffisants"
           },
-          "404": {
-            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          "433": {
+            "description": ""
           },
           "500": {
             "description": "une erreur serveur est survenue."
