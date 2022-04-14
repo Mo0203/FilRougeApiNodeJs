@@ -1,0 +1,44 @@
+CODE SUCCES
+
+200 : requete terminée avec succès
+201 : création de ressources dans la base de données
+204: suppression de ressources dans la base de données
+
+CODE ERREUR : 
+400 : Mauvaise requete
+
+Fonction verifyToken() 
+403 : Token Invalide
+
+404 : 
+
+Fonction checkEmail()
+420 : Email non renseigné
+421 : Email Invalide
+
+Fonction checkUser()
+422 : nom utilisateur non renseigné
+423 : nom utilisateur invalide (caracteres spéciaux non autorisés)
+424 : muvais format de mot de passe (au moins 8 caracteres, dont au moins 1 majuscule et  un chiffre)
+425 : Organisme non renseigné
+
+Fonction adminCheck()
+426 : utilisateur non trouvé dans la base de données
+427 : droit utilisateur insuffisant (pas admin)
+
+Fonction checkInsert()
+428 : Organisme non renseigné
+429 : les âges renseignés sont incohérents, âge minimum supérieur à âge maximum
+430 : age renseigné dans un format invalide
+
+fonction checkOrga() 
+428 : Organisme non renseigné
+431 : nom organisme invalide (caractères spéciaux)
+
+Login User
+432 : Utilisateur trouvé mais mot de passe ne correspondant pas à celui de la base de données
+
+Chiffrage mot de passe : 
+433 : erreur dans le chiffrement du mot de passe
+
+434 : erruer lors de la sauvegarde de données d'un nouveau public cible
