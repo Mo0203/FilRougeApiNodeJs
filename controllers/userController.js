@@ -119,7 +119,7 @@ const updateUser = async (req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
-    #swagger.description = 'modifier les informations d\'un utilisateur' 
+    #swagger.description = 'Modifier les informations d\'un utilisateur' 
 
     #swagger.security = [{ "jwt" : [] }]
     
@@ -145,7 +145,7 @@ const updateUser = async (req, res) => {
     #swagger.responses[403] = {description: 'Token invalide.'}
     #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
     #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
-    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
+    #swagger.responses[500] = {description: 'Une erreur serveur est survenue.'} 
     
     */
 

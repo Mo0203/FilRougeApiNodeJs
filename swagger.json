@@ -30,7 +30,7 @@
         "tags": [
           "Public ciblé"
         ],
-        "description": "Ajouter un public ciblé dans la base de données",
+        "description": "Ajouter un public ciblé dans la base de données.",
         "parameters": [
           {
             "name": "target",
@@ -44,31 +44,31 @@
               }
             },
             "required": true,
-            "description": "dénomination du public ciblé (exemple: sans emploi)"
+            "description": "Dénomination du public ciblé. (Exemple: sans emploi.)"
           }
         ],
         "responses": {
           "201": {
-            "description": "public cible ajouté à la base de données avec succès.",
+            "description": "Public ciblé ajouté à la base de données avec succès.",
             "content": "application/json",
             "schema": {
               "$ref": "#/definitions/audience"
             }
           },
-          "400": {
-            "description": "Bad Request"
-          },
           "403": {
             "description": "Token invalide."
           },
           "426": {
-            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données."
           },
           "427": {
-            "description": "L'utilisateur ne dispose pas des droits suffisants"
+            "description": "L'utilisateur ne dispose pas de droits suffisants."
+          },
+          "434": {
+            "description": "Erreur lors de la sauvegarde des données."
           },
           "500": {
-            "description": "une erreur serveur est survenue."
+            "description": "Une erreur serveur est survenue."
           }
         },
         "security": [
@@ -81,21 +81,21 @@
         "tags": [
           "Public ciblé"
         ],
-        "description": "liste des publics ciblés présent dans la base de données",
+        "description": "Liste des publics ciblés présents dans la base de données.",
         "parameters": [],
         "responses": {
           "200": {
-            "description": "liste des dispositifs reçues avec succès.",
+            "description": "Liste des dispositifs reçus avec succès.",
             "content": "application/json",
             "schema": {
               "$ref": "#/definitions/audience"
             }
           },
           "204": {
-            "description": "Requête reussie, mais il n'existe aucun contenu à renvoyer"
+            "description": "No Content"
           },
           "500": {
-            "description": "une erreur serveur est survenue."
+            "description": "Une erreur serveur est survenue."
           }
         }
       },
@@ -103,13 +103,13 @@
         "tags": [
           "Public ciblé"
         ],
-        "description": "Modifier un public ciblé dans la base de données",
+        "description": "Modifier un public ciblé dans la base de données.",
         "parameters": [
           {
             "name": "obj",
             "in": "body",
             "required": true,
-            "description": "données à modifier",
+            "description": "Données à modifier",
             "schema": {
               "type": "object",
               "properties": {
@@ -134,7 +134,7 @@
             "schema": {
               "$ref": "#/definitions/audience"
             },
-            "description": "public cible modifié dans la base de données avec succès."
+            "description": "Public cible modifié dans la base de données avec succès."
           },
           "400": {
             "description": "Bad Request"
@@ -149,7 +149,7 @@
             "description": "L'utilisateur ne dispose pas des droits suffisants"
           },
           "500": {
-            "description": "une erreur serveur est survenue."
+            "description": "Une erreur serveur est survenue."
           }
         },
         "security": [
@@ -162,10 +162,16 @@
         "tags": [
           "Public ciblé"
         ],
-        "description": "Supprimer un public ciblé dans la base de données",
+        "description": "Effacer le public ciblé dans la base de données grâce à son id.",
         "parameters": [
           {
             "name": "id",
+            "description": "Id de l'élément à supprimer.",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "body",
             "in": "body",
             "schema": {
               "type": "object",
@@ -174,33 +180,30 @@
                   "example": "any"
                 }
               }
-            },
-            "required": true,
-            "description": "id de l'élément à supprimer"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "public cible supprimé de la base de données avec succès.",
-            "content": "application/json",
-            "schema": {
-              "$ref": "#/definitions/audience"
-            }
+            "description": "OK"
+          },
+          "201": {
+            "description": "Requête reussie, public ciblé correctement ajouté à la base de données."
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Mauvaise requête, les informations envoyées ne peuvent pas être traitées."
           },
           "403": {
-            "description": "Token invalide."
+            "description": "Requête exécutée, accès interdit, token invalide."
           },
           "426": {
-            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+            "description": "Requête exécutée, utilisateur non-trouvé."
           },
           "427": {
-            "description": "L'utilisateur ne dispose pas des droits suffisants"
+            "description": "Requête exécutée, accès interdit, l'utilisateur ne dispose pas des droits. (Il n'est pas administrateur.)."
           },
           "500": {
-            "description": "une erreur serveur est survenue."
+            "description": "Erreur interne."
           }
         },
         "security": [
@@ -611,7 +614,7 @@
         "tags": [
           "Utilisateur"
         ],
-        "description": "modifier les informations d\\'un utilisateur",
+        "description": "Modifier les informations d\\'un utilisateur",
         "parameters": [
           {
             "name": "obj",
@@ -672,7 +675,7 @@
             "description": ""
           },
           "500": {
-            "description": "une erreur serveur est survenue."
+            "description": "Une erreur serveur est survenue."
           }
         },
         "security": [
