@@ -11,7 +11,7 @@ const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
 const LOGIN_REGEX = /^[a-zA-Z0-9\-\s]+$/;
 
 
-const getUser = async (req, res) => {
+const getUser = async(req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
@@ -35,10 +35,10 @@ const getUser = async (req, res) => {
            }            
 
     #swagger.responses[404] = {description: 'Email introuvable, l\'utilisateur n\'existe pas dans la base de données.'}
-    #swagger.responses[432] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect'}
-    #swagger.responses[420] = {description: 'L\'email n\'a pas été renseigné'}
-    #swagger.responses[421] = {description: 'Le format de l\'email est invalide'}
-    #swagger.responses[433] = {description: 'Erreur lors du chiffrage du mot de passe'}
+    #swagger.responses[400] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect'}
+    #swagger.responses[400] = {description: 'L\'email n\'a pas été renseigné'}
+    #swagger.responses[400] = {description: 'Le format de l\'email est invalide'}
+    #swagger.responses[500] = {description: 'Erreur lors du chiffrage du mot de passe'}
     #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
     
     */
@@ -52,13 +52,13 @@ const getUser = async (req, res) => {
             if (!user) {
                 return res.status(404).json({ 'error': 'Email introuvable' });
             } else {
-                bcrypt.compare(password, user.password, function (err, boolCrypt) {
+                bcrypt.compare(password, user.password, function(err, boolCrypt) {
                     if (boolCrypt) {
                         res.status(200).send({ "user": user, "token": generateToken(user.id) });
                     } else if (!boolCrypt) {
-                        return res.status(432).json({ 'error': 'Mot de passe incorrect' });
+                        return res.status(400).json({ 'error': 'Mot de passe incorrect' });
                     } else {
-                        return res.status(433).json({ 'error': 'Une erreur est survenue' + err });
+                        return res.status(500).json({ 'error': 'Une erreur est survenue' + err });
                     }
                 })
 
@@ -71,7 +71,7 @@ const getUser = async (req, res) => {
 };
 
 
-const createUser = async (req, res) => {
+const createUser = async(req, res) => {
 
     /*#swagger.ignore = true*/
 
@@ -91,8 +91,8 @@ const createUser = async (req, res) => {
         if (user) {
             return res.status(400).json({ 'error': 'l\'email est déjà utilisé' });
         } else {
-            bcrypt.genSalt(10, function (err, salt) {
-                bcrypt.hash(password, salt, function (err, hashedPass) {
+            bcrypt.genSalt(10, function(err, salt) {
+                bcrypt.hash(password, salt, function(err, hashedPass) {
                     const newUserRecord = new User({
                         login: login,
                         email: email,
@@ -115,7 +115,7 @@ const createUser = async (req, res) => {
     })
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async(req, res) => {
 
     /*  
     #swagger.tags = ['Utilisateur']
@@ -143,9 +143,10 @@ const updateUser = async (req, res) => {
            }            
 
     #swagger.responses[403] = {description: 'Token invalide.'}
-    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
-    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
+    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[401] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
     #swagger.responses[500] = {description: 'Une erreur serveur est survenue.'} 
+    #swagger.responses[500] = {description: 'Erreur lors du chiffrage du mot de passe'}
     
     */
 
@@ -167,7 +168,7 @@ const updateUser = async (req, res) => {
     var salt = bcrypt.genSaltSync(10);
     bcrypt.hash(password, salt, (err, hashedPass) => {
         if (err) {
-            return res.status(433).json({ 'error': 'Une erreur est survenue lors de la sécurisation du mot de passe' });
+            return res.status(500).json({ 'error': 'Une erreur est survenue lors de la sécurisation du mot de passe' });
         }
 
 
@@ -178,9 +179,9 @@ const updateUser = async (req, res) => {
                 password: hashedPass,
                 organisation: organisation
             }
-        }, { new: true }, function (err, result) {
+        }, { new: true }, function(err, result) {
             if (err) {
-                return res.status(400).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
+                return res.status(500).json({ 'error': 'Echec de la mise a jour de l\'utilisateur' })
             } else { // logs are saved only when the action is validated with no error
                 saveLog(userId, id, "Modified user")
                 return res.status(200).json({ result });
@@ -191,7 +192,7 @@ const updateUser = async (req, res) => {
 }
 
 
-const deleteUser = async (req, res) => {
+const deleteUser = async(req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
@@ -215,26 +216,26 @@ const deleteUser = async (req, res) => {
 // email regex and not null checker 
 function checkEmail(email, res) {
     if (email == "" || email == null) {
-        return res.status(420).json({ 'error': 'Veuillez renseigner votre email' });
+        return res.status(400).json({ 'error': 'Veuillez renseigner votre email' });
     }
     if (!EMAIL_REGEX.test(email)) {
-        return res.status(421).json({ 'error': 'Email invalide' });
+        return res.status(400).json({ 'error': 'Email invalide' });
     }
 }
 
 // User entry checker to securise password and prevent null strings
 function checkUser(login, password, organisation, res) {
     if (login == "" || login == null) {
-        return res.status(422).json({ 'error': 'Veuillez renseigner votre nom' });
+        return res.status(400).json({ 'error': 'Veuillez renseigner votre nom' });
     }
     if (!LOGIN_REGEX.test(login)) {
-        return res.status(423).json({ 'error': 'Nom d\'utilisateur invalide' });
+        return res.status(400).json({ 'error': 'Nom d\'utilisateur invalide' });
     }
     if (!PASSWORD_REGEX.test(password)) {
-        return res.status(424).json({ 'error': 'Le mot de passe doit contenir au moins 8 caractères dont une majuscule et un chiffre' });
+        return res.status(400).json({ 'error': 'Le mot de passe doit contenir au moins 8 caractères dont une majuscule et un chiffre' });
     }
     if (organisation == "" || organisation == null) {
-        return res.status(425).json({ 'error': 'Veuillez sélectionner une organisation' });
+        return res.status(400).json({ 'error': 'Veuillez sélectionner une organisation' });
     }
 }
 
@@ -260,14 +261,14 @@ function saveLog(actorId, targetId, action) {
 
 // checks is user retrieved from token has admin rights
 function adminCheck(userId) {
-    User.findById(userId, function (err, result) {
+    User.findById(userId, function(err, result) {
         if (err) {
-            res.status(426).json({ 'error': 'Utilisateur introuvable' });
+            res.status(404).json({ 'error': 'Utilisateur introuvable' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(427).json({ 'error': 'Vous ne disposez pas des droits' });
+                res.status(401).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })
@@ -277,7 +278,7 @@ function adminCheck(userId) {
 // fonction de vérification de la validité du token, renvoie null si erreur
 function verifyToken(req, res) {
     try {
-        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {
+        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function(tokenErr, decoded) {
             if (tokenErr) throw new Error(tokenErr);
             req.auth = decoded;
         })

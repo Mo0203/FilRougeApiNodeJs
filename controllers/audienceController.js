@@ -1,7 +1,7 @@
 const Audience = require('../models/audienceModel.js');
 const ObjectId = require('mongoose').Types.ObjectId;
 
-const getAudience = async (req, res) => {
+const getAudience = async(req, res) => {
 
     /*
     #swagger.tags = ['Public ciblé']
@@ -29,7 +29,7 @@ const getAudience = async (req, res) => {
         })
 };
 
-const createAudience = async (req, res) => {
+const createAudience = async(req, res) => {
 
     /*  
     #swagger.tags = ['Public ciblé']
@@ -47,9 +47,9 @@ const createAudience = async (req, res) => {
             description: 'Public ciblé ajouté à la base de données avec succès.' 
     }      
     #swagger.responses[403] = {description: 'Token invalide.'}
-    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données.'}
-    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas de droits suffisants.'}
-    #swagger.responses[434] = {description: 'Erreur lors de la sauvegarde des données.'}      
+    #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données.'}
+    #swagger.responses[401] = {description: 'L\'utilisateur ne dispose pas de droits suffisants.'}
+    #swagger.responses[500] = {description: 'Erreur lors de la sauvegarde des données.'}      
     #swagger.responses[500] = {description: 'Une erreur serveur est survenue.'} 
     
     */
@@ -68,12 +68,12 @@ const createAudience = async (req, res) => {
         if (!err) {
             res.status(201).send(result);
         } else {
-            return res.status(434).json({ 'error': 'Une erreur est survenue lors de la sauvegarde des données.' });
+            return res.status(500).json({ 'error': 'Une erreur est survenue lors de la sauvegarde des données.' });
         }
     })
 };
 
-const updateAudience = async (req, res) => {
+const updateAudience = async(req, res) => {
 
     /* 
    #swagger.tags = ['Public ciblé']
@@ -94,8 +94,8 @@ const updateAudience = async (req, res) => {
            description: 'Public cible modifié dans la base de données avec succès.' 
     }           
    #swagger.responses[403] = {description: 'Token invalide.'}
-   #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
-   #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
+   #swagger.responses[404] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+   #swagger.responses[401] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
    #swagger.responses[500] = {description: 'Une erreur serveur est survenue.'} 
    */
 
@@ -111,7 +111,7 @@ const updateAudience = async (req, res) => {
         $set: {
             target: target,
         }
-    }, { new: true }, function (err, result) {
+    }, { new: true }, function(err, result) {
         if (err) {
             return res.status(500).json({ 'error': 'Echec de la modification' });
         } else {
@@ -120,7 +120,7 @@ const updateAudience = async (req, res) => {
     })
 };
 
-const deleteAudience = async (req, res) => {
+const deleteAudience = async(req, res) => {
 
     /*  
     #swagger.tags = ['Public ciblé']
@@ -130,8 +130,8 @@ const deleteAudience = async (req, res) => {
     #swagger.responses[201] = {description: 'Requête reussie, public ciblé correctement ajouté à la base de données.'}
     #swagger.responses[400] = {description: 'Mauvaise requête, les informations envoyées ne peuvent pas être traitées.'}
     #swagger.responses[403] = {description: 'Requête exécutée, accès interdit, token invalide.'}
-    #swagger.responses[427] = {description: 'Requête exécutée, accès interdit, l\'utilisateur ne dispose pas des droits. (Il n\'est pas administrateur.).'}
-    #swagger.responses[426] = {description: 'Requête exécutée, utilisateur non-trouvé.'}
+    #swagger.responses[401] = {description: 'Requête exécutée, accès interdit, l\'utilisateur ne dispose pas des droits. (Il n\'est pas administrateur.).'}
+    #swagger.responses[404] = {description: 'Requête exécutée, utilisateur non-trouvé.'}
     #swagger.responses[500] = {description: 'Erreur interne.'}
     */
 
@@ -155,7 +155,7 @@ const deleteAudience = async (req, res) => {
 // fonction de vérification de la validité du token, renvoie null si erreur
 function verifyToken(req, res) {
     try {
-        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function (tokenErr, decoded) {
+        jwt.verify(req.headers['authorization'], process.env.TOKEN_SECRET, function(tokenErr, decoded) {
             if (tokenErr) throw new Error(tokenErr);
             req.auth = decoded;
         })
@@ -168,14 +168,14 @@ function verifyToken(req, res) {
 
 // checks is user retrieved from token has admin rights
 function adminCheck(userId) {
-    User.findById(userId, function (err, result) {
+    User.findById(userId, function(err, result) {
         if (err) {
-            res.status(426).json({ 'error': 'Utilisateur introuvable.' });
+            res.status(404).json({ 'error': 'Utilisateur introuvable.' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(427).json({ 'error': 'Vous ne disposez pas des droits.' });
+                res.status(401).json({ 'error': 'Vous ne disposez pas des droits.' });
             }
         }
     })
