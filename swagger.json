@@ -2,108 +2,124 @@
   "swagger": "2.0",
   "info": {
     "version": "1.0.0",
-    "title": "REST API",
-    "description": ""
+    "title": "Documentation de l'API APIINSERTION",
+    "description": "Une API conçue pour centraliser et faciliter les recherches de dispositif d'insertion ou de formation en France"
   },
   "host": "localhost:3500",
   "basePath": "/",
   "schemes": [
-    "http"
+    "http",
+    "https"
+  ],
+  "securityDefinitions": {
+    "jwt": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
   ],
   "paths": {
-    "/register": {
+    "/audience": {
       "post": {
-        "description": "",
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Ajouter un public ciblé dans la base de données.",
         "parameters": [
           {
-            "name": "body",
+            "name": "target",
             "in": "body",
             "schema": {
               "type": "object",
               "properties": {
-                "login": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "organisation": {
+                "target": {
                   "example": "any"
                 }
               }
-            }
+            },
+            "required": true,
+            "description": "Dénomination du public ciblé. (Exemple: sans emploi.)"
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/login": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
+            "description": "Public ciblé ajouté à la base de données avec succès.",
+            "content": "application/json",
             "schema": {
-              "type": "object",
-              "properties": {
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/audience"
             }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
+          "403": {
+            "description": "Token invalide."
+          },
+          "426": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données."
+          },
+          "427": {
+            "description": "L'utilisateur ne dispose pas de droits suffisants."
+          },
+          "434": {
+            "description": "Erreur lors de la sauvegarde des données."
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Une erreur serveur est survenue."
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Liste des publics ciblés présents dans la base de données.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Liste des dispositifs reçus avec succès.",
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/audience"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "500": {
+            "description": "Une erreur serveur est survenue."
           }
         }
-      }
-    },
-    "/user": {
+      },
       "put": {
-        "description": "",
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Modifier un public ciblé dans la base de données.",
         "parameters": [
           {
-            "name": "body",
+            "name": "obj",
             "in": "body",
+            "required": true,
+            "description": "Données à modifier",
             "schema": {
               "type": "object",
               "properties": {
                 "id": {
-                  "example": "any"
+                  "type": "string",
+                  "example": "id de l'élément à modifier"
                 },
-                "login": {
-                  "example": "any"
-                },
-                "email": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "organisation": {
-                  "example": "any"
+                "target": {
+                  "type": "string",
+                  "example": "dénomination du public ciblé (exemple: sans emploi)"
                 }
               }
             }
@@ -113,20 +129,45 @@
           "200": {
             "description": "OK"
           },
+          "201": {
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/audience"
+            },
+            "description": "Public cible modifié dans la base de données avec succès."
+          },
           "400": {
             "description": "Bad Request"
           },
+          "403": {
+            "description": "Token invalide."
+          },
+          "426": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "427": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Une erreur serveur est survenue."
           }
-        }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Public ciblé"
+        ],
+        "description": "Effacer le public ciblé dans la base de données grâce à son id.",
         "parameters": [
           {
-            "name": "authorization",
-            "in": "header",
+            "name": "id",
+            "description": "Id de l'élément à supprimer.",
+            "in": "query",
             "type": "string"
           },
           {
@@ -146,114 +187,30 @@
           "200": {
             "description": "OK"
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/audience": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "target": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
           "201": {
-            "description": "Created"
+            "description": "Requête reussie, public ciblé correctement ajouté à la base de données."
           },
           "400": {
-            "description": "Bad Request"
-          }
-        }
-      },
-      "get": {
-        "description": "",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK"
+            "description": "Mauvaise requête, les informations envoyées ne peuvent pas être traitées."
           },
-          "204": {
-            "description": "No Content"
+          "403": {
+            "description": "Requête exécutée, accès interdit, token invalide."
+          },
+          "426": {
+            "description": "Requête exécutée, utilisateur non-trouvé."
+          },
+          "427": {
+            "description": "Requête exécutée, accès interdit, l'utilisateur ne dispose pas des droits. (Il n'est pas administrateur.)."
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Erreur interne."
           }
-        }
-      },
-      "put": {
-        "description": "",
-        "parameters": [
+        },
+        "security": [
           {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                },
-                "target": {
-                  "example": "any"
-                }
-              }
-            }
+            "jwt": []
           }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
+        ]
       }
     },
     "/insertion": {
@@ -498,103 +455,6 @@
         }
       }
     },
-    "/log": {
-      "get": {
-        "description": "",
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/logByUser": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "userId": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
     "/organisation": {
       "post": {
         "description": "",
@@ -690,6 +550,307 @@
           "500": {
             "description": "Internal Server Error"
           }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Utilisateur"
+        ],
+        "description": "Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\\'autorisation",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "required": true,
+            "description": "données de l'utilisateur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "example": "l'email de l'utilisateur"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "le mot de passe de l'utilisateur"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Utilisateur trouvé dans la base de données.",
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/userResponse"
+            }
+          },
+          "404": {
+            "description": "Email introuvable, l'utilisateur n'existe pas dans la base de données."
+          },
+          "420": {
+            "description": "L'email n'a pas été renseigné"
+          },
+          "421": {
+            "description": "Le format de l'email est invalide"
+          },
+          "432": {
+            "description": "L'utilisateur trouvé mais mot de passe incorrect"
+          },
+          "433": {
+            "description": "Erreur lors du chiffrage du mot de passe"
+          },
+          "500": {
+            "description": "une erreur serveur est survenue."
+          }
+        }
+      }
+    },
+    "/user": {
+      "put": {
+        "tags": [
+          "Utilisateur"
+        ],
+        "description": "Modifier les informations d\\'un utilisateur",
+        "parameters": [
+          {
+            "name": "obj",
+            "in": "body",
+            "required": true,
+            "description": "données de l'utilisateur",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "l'identifiant de l'utilisateur à modifier"
+                },
+                "login": {
+                  "type": "string",
+                  "example": "le nom de l'utilisateur"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "l'email de l'utilisateur"
+                },
+                "password": {
+                  "type": "string",
+                  "example": "le mot de passe de l'utilisateur"
+                },
+                "organisation": {
+                  "type": "string",
+                  "example": "l'organisme auquel l'utilisateur est rattaché"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "content": "application/json",
+            "schema": {
+              "$ref": "#/definitions/user"
+            },
+            "description": "Utilisateur modifié dans la base de données avec succès."
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "403": {
+            "description": "Token invalide."
+          },
+          "426": {
+            "description": "L'utilisateur n'a pas été trouvé dans la base de données"
+          },
+          "427": {
+            "description": "L'utilisateur ne dispose pas des droits suffisants"
+          },
+          "433": {
+            "description": ""
+          },
+          "500": {
+            "description": "Une erreur serveur est survenue."
+          }
+        },
+        "security": [
+          {
+            "jwt": []
+          }
+        ]
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "example": "Jean Guerin"
+        },
+        "email": {
+          "type": "string",
+          "example": "Jean-Guerin@gmail.com"
+        },
+        "password": {
+          "type": "string",
+          "example": "*********"
+        },
+        "organisation": {
+          "type": "string",
+          "example": "Service Militaire Volontaire"
+        },
+        "date": {
+          "type": "string",
+          "example": "date de création du profil"
+        }
+      }
+    },
+    "insertion": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "example": "Le titre du dispositif"
+        },
+        "min_age": {
+          "type": "string",
+          "example": "l'age minimum requis pour le dispositif"
+        },
+        "max_age": {
+          "type": "string",
+          "example": "l'age maximum requis pour le dispositif"
+        },
+        "income": {
+          "type": "string",
+          "example": "revenus alloués au bénéficiaire du dispositif"
+        },
+        "creation_date": {
+          "type": "string",
+          "example": "date de création dans la base de données du dispositif"
+        },
+        "url": {
+          "type": "string",
+          "example": "lien vers la page du dispositif"
+        },
+        "audience": {
+          "type": "string",
+          "example": "public ciblé par le dispositif"
+        },
+        "duration": {
+          "type": "string",
+          "example": "durée du dispositif"
+        },
+        "founding": {
+          "type": "string",
+          "example": "financement du dispositif"
+        },
+        "organisation": {
+          "type": "string",
+          "example": "organisme prestatatire du dispositif"
+        },
+        "goal": {
+          "type": "string",
+          "example": "Objectif du dispositif"
+        },
+        "info": {
+          "type": "string",
+          "example": "informations supplémenatires"
+        }
+      }
+    },
+    "organisation": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "example": "Nom de l'Organisme"
+        },
+        "date": {
+          "type": "string",
+          "example": "date de création dans la base de données"
+        }
+      }
+    },
+    "audience": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "example": "public ciblé"
+        }
+      }
+    },
+    "userResponse": {
+      "type": "object",
+      "properties": {
+        "User": {
+          "type": "object",
+          "properties": {
+            "login": {
+              "type": "string",
+              "example": "Jean Guerin"
+            },
+            "email": {
+              "type": "string",
+              "example": "Jean-Guerin@gmail.com"
+            },
+            "password": {
+              "type": "string",
+              "example": "*********"
+            },
+            "organisation": {
+              "type": "string",
+              "example": "Service Militaire Volontaire"
+            },
+            "date": {
+              "type": "string",
+              "example": "date de création du profil"
+            }
+          }
+        },
+        "token": {
+          "type": "string",
+          "example": "jeton d'autorisation"
         }
       }
     }

@@ -12,6 +12,36 @@ const LOGIN_REGEX = /^[a-zA-Z0-9\-\s]+$/;
 
 
 const getUser = async (req, res) => {
+
+    /*  
+    #swagger.tags = ['Utilisateur']
+    #swagger.description = 'Rechercher un utilisateur dans la base de données afin de le connecter et de lui attribuer un jeton d\'autorisation'
+    
+    #swagger.parameters['obj'] = {
+        in: 'body',
+        required: true,
+        description: 'données de l\'utilisateur',
+        type: 'string',
+        schema: {
+            email: 'l\'email de l\'utilisateur',
+            password: 'le mot de passe de l\'utilisateur'
+        }
+    }
+
+    #swagger.responses[200] = { 
+            content : "application/json",
+            schema:  {$ref: "#/definitions/userResponse"},
+            description: 'Utilisateur trouvé dans la base de données.' 
+           }            
+
+    #swagger.responses[404] = {description: 'Email introuvable, l\'utilisateur n\'existe pas dans la base de données.'}
+    #swagger.responses[432] = {description: 'L\'utilisateur trouvé mais mot de passe incorrect'}
+    #swagger.responses[420] = {description: 'L\'email n\'a pas été renseigné'}
+    #swagger.responses[421] = {description: 'Le format de l\'email est invalide'}
+    #swagger.responses[433] = {description: 'Erreur lors du chiffrage du mot de passe'}
+    #swagger.responses[500] = {description: 'une erreur serveur est survenue.'} 
+    
+    */
     let email = req.body.email;
     let password = req.body.password;
 
@@ -20,15 +50,15 @@ const getUser = async (req, res) => {
     User.findOne({ email: email })
         .then((user) => {
             if (!user) {
-                return res.status(400).json({ 'error': 'Email introuvable' });
+                return res.status(404).json({ 'error': 'Email introuvable' });
             } else {
                 bcrypt.compare(password, user.password, function (err, boolCrypt) {
                     if (boolCrypt) {
                         res.status(200).send({ "user": user, "token": generateToken(user.id) });
                     } else if (!boolCrypt) {
-                        return res.status(400).json({ 'error': 'Mot de passe incorrect' });
+                        return res.status(432).json({ 'error': 'Mot de passe incorrect' });
                     } else {
-                        return res.status(400).json({ 'error': 'Une erreur est survenue' + err });
+                        return res.status(433).json({ 'error': 'Une erreur est survenue' + err });
                     }
                 })
 
@@ -43,9 +73,11 @@ const getUser = async (req, res) => {
 
 const createUser = async (req, res) => {
 
+    /*#swagger.ignore = true*/
+
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-    if(adminCheck(userId) == false) return res;
+    if (adminCheck(userId) == false) return res;
 
     let login = req.body.login;
     let email = req.body.email;
@@ -84,10 +116,42 @@ const createUser = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
+
+    /*  
+    #swagger.tags = ['Utilisateur']
+    #swagger.description = 'Modifier les informations d\'un utilisateur' 
+
+    #swagger.security = [{ "jwt" : [] }]
     
+    #swagger.parameters['obj'] = {
+        in: 'body',
+        required: true,
+        description: 'données de l\'utilisateur',
+        schema: {
+            id: 'l\'identifiant de l\'utilisateur à modifier',
+            login: 'le nom de l\'utilisateur',
+            email: 'l\'email de l\'utilisateur',
+            password: 'le mot de passe de l\'utilisateur',
+            organisation: 'l\'organisme auquel l\'utilisateur est rattaché'
+        }
+    }
+
+    #swagger.responses[201] = { 
+            content : "application/json",
+            schema:  {$ref: "#/definitions/user"},
+            description: 'Utilisateur modifié dans la base de données avec succès.' 
+           }            
+
+    #swagger.responses[403] = {description: 'Token invalide.'}
+    #swagger.responses[426] = {description: 'L\'utilisateur n\'a pas été trouvé dans la base de données'}
+    #swagger.responses[427] = {description: 'L\'utilisateur ne dispose pas des droits suffisants'}
+    #swagger.responses[500] = {description: 'Une erreur serveur est survenue.'} 
+    
+    */
+
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-    if(adminCheck(userId) == false) return res;
+    if (adminCheck(userId) == false) return res;
 
     let id = req.body.id;
     let login = req.body.login;
@@ -103,7 +167,7 @@ const updateUser = async (req, res) => {
     var salt = bcrypt.genSaltSync(10);
     bcrypt.hash(password, salt, (err, hashedPass) => {
         if (err) {
-            return res.status(500).json({ 'error': 'Une erreur est survenue lors de la sécurisation du mot de passe' });
+            return res.status(433).json({ 'error': 'Une erreur est survenue lors de la sécurisation du mot de passe' });
         }
 
 
@@ -131,9 +195,9 @@ const deleteUser = async (req, res) => {
 
     const userId = verifyToken(req, res);
     if (userId == null) return res;
-    if(adminCheck(userId) == false) return res;
+    if (adminCheck(userId) == false) return res;
     id = req.body.id;
-    if(!ObjectId.isValid(id)) return res.status(400).json({'error':'L\'ID spécifié n\'existe  pas'});
+    if (!ObjectId.isValid(id)) return res.status(400).json({ 'error': 'L\'ID spécifié n\'existe  pas' });
     User.findByIdAndDelete(
         req.body.id,
         (err, result) => {
@@ -144,33 +208,33 @@ const deleteUser = async (req, res) => {
                 return res.status(500).json({ 'error': 'erreur serveur lors de la suppression de l\'utilisateur : ' + err });
             }
         }
-    )   
+    )
 }
 
 
 // email regex and not null checker 
 function checkEmail(email, res) {
     if (email == "" || email == null) {
-        return res.status(400).json({ 'error': 'Veuillez renseigner votre email' });
+        return res.status(420).json({ 'error': 'Veuillez renseigner votre email' });
     }
     if (!EMAIL_REGEX.test(email)) {
-        return res.status(400).json({ 'error': 'Email invalide' });
+        return res.status(421).json({ 'error': 'Email invalide' });
     }
 }
 
 // User entry checker to securise password and prevent null strings
 function checkUser(login, password, organisation, res) {
     if (login == "" || login == null) {
-        return res.status(400).json({ 'error': 'Veuillez renseigner votre nom' });
+        return res.status(422).json({ 'error': 'Veuillez renseigner votre nom' });
     }
     if (!LOGIN_REGEX.test(login)) {
-        return res.status(400).json({ 'error': 'Nom d\'utilisateur invalide' });
+        return res.status(423).json({ 'error': 'Nom d\'utilisateur invalide' });
     }
     if (!PASSWORD_REGEX.test(password)) {
-        return res.status(400).json({ 'error': 'Le mot de passe doit contenir au moins 8 caractères dont une majuscule et un chiffre' });
+        return res.status(424).json({ 'error': 'Le mot de passe doit contenir au moins 8 caractères dont une majuscule et un chiffre' });
     }
     if (organisation == "" || organisation == null) {
-        return res.status(400).json({ 'error': 'Veuillez sélectionner une organisation' });
+        return res.status(425).json({ 'error': 'Veuillez sélectionner une organisation' });
     }
 }
 
@@ -197,13 +261,13 @@ function saveLog(actorId, targetId, action) {
 // checks is user retrieved from token has admin rights
 function adminCheck(userId) {
     User.findById(userId, function (err, result) {
-        if(err) {
-            res.status(404).json({'error':'Utilisateur introuvable'});
+        if (err) {
+            res.status(426).json({ 'error': 'Utilisateur introuvable' });
         } else {
             if (result.isAdmin) {
                 return true;
             } else {
-                res.status(403).json({'error':'Vous ne disposez pas des droits'});
+                res.status(427).json({ 'error': 'Vous ne disposez pas des droits' });
             }
         }
     })
@@ -218,8 +282,8 @@ function verifyToken(req, res) {
             req.auth = decoded;
         })
     } catch (e) {
-       res.status(403).json({'error':'Token invalide '+e});
-       return null;
+        res.status(403).json({ 'error': 'Token invalide ' + e });
+        return null;
     }
     return req.auth.sub;
 }
