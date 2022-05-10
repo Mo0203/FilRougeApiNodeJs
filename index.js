@@ -8,8 +8,6 @@ const swaggerFile = require('./swagger.json');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const xss = require('xss-clean');
-const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger.json');
 
 
 const userRoutes = require('./routes/userRoutes');
