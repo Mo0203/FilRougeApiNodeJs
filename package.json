@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon index.js",
-    "swagger": "node swagger.js"
+    "swagger": "node swagger.js",
+    "prod": "pm2 start index.js"
   },
   "repository": {
     "type": "git",
